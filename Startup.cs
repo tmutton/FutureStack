@@ -34,6 +34,13 @@ namespace FutureStack
             services.AddApplicationInsightsTelemetry(Configuration);
 
             services.AddMvc();
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll",
+                    builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()
+                );
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
@@ -41,6 +48,8 @@ namespace FutureStack
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
+
+            app.UseCors("AllowAll");
 
             app.UseApplicationInsightsRequestTelemetry();
 

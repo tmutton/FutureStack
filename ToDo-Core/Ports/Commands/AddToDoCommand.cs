@@ -6,8 +6,12 @@ namespace ToDoCore.Ports.Commands
 {
     public class AddToDoCommand : Command
     {
-        public AddToDoCommand() : base(Guid.NewGuid())
+        public string Title { get; }
+
+        public AddToDoCommand(string title)
+            : base(Guid.NewGuid())
         {
+            Title = title;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using paramore.brighter.commandprocessor;
 using ToDoCore.Adaptors.Db;
+using ToDoCore.Model;
 using ToDoCore.Ports.Commands;
 
 namespace ToDoCore.Ports.Handlers
@@ -16,6 +17,12 @@ namespace ToDoCore.Ports.Handlers
 
         public override AddToDoCommand Handle(AddToDoCommand command)
         {
+            using (var uow = new ToDoContext(_options))
+            {
+                var todo = new ToDoItem {Title = command.Title};
+                uow.ToDoItems.Add(todo);
+                uow.SaveChanges();
+            }
             return base.Handle(command);
         }
     }

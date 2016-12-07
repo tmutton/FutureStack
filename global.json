@@ -1,0 +1,6 @@
+{
+    "projects": ["todo-backend","ToDo-Core", "ToDo-Test"],
+    "sdk":{
+        "version": "1.0.0-preview2-1-003177"
+    }
+}

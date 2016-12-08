@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ToDoCore.Adaptors.Db;
+using ToDoCore.Adaptors.ViewModelRetrievers;
 using ToDoCore.Ports.Commands;
 using ToDoCore.Ports.Handlers;
 using ToDoCore.ViewModels;
@@ -20,7 +22,7 @@ namespace FutureStack.Controllers
         [HttpGet("{id}", Name = "GetTodo")]
         public IActionResult GetById(int id)
         {
-            var retriever = new ViewModelRetriever<ToDoViewModel>();
+            var retriever = new ToDoViewModelRetriever();
             var toDo = retriever.Get(id);
 
             return Ok(toDo);
@@ -29,7 +31,7 @@ namespace FutureStack.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody]ToDoRequest request)
+        public IActionResult Post([FromBody]AddToDoRequest request)
         {
             var options = new DbContextOptionsBuilder<ToDoContext>()
                 .UseSqlServer(@"Server=localhost;Database=ToDo;Trusted_Connection=True;")
@@ -40,10 +42,10 @@ namespace FutureStack.Controllers
             var handler = new AddToDoCommandHandler(options);
             handler.Handle(addToDoCommand);
 
-            var retriever = new ViewModelRetriever<ToDoViewModel>();
+            var retriever = new ToDoViewModelRetriever();
             var addedToDo = retriever.Get(addToDoCommand.ToDoItemId);
 
-            return CreatedAtRoute("GetTodo", new { id = addedToDo.Id }, addedToDo);
+            return CreatedAtRoute("GetTodo", new { id = addedToDo.First().Id }, addedToDo);
         }
    }
 }

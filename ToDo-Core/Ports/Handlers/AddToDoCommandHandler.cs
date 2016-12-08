@@ -21,7 +21,8 @@ namespace ToDoCore.Ports.Handlers
             using (var uow = new ToDoContext(_options))
             {
                 var repository = new ToDoItemRepository(uow);
-                repository.Add(new ToDoItem {Title = command.Title});
+                var savedItem = repository.Add(new ToDoItem {Title = command.Title});
+                command.ToDoItemId = savedItem.Id;
             }
             return base.Handle(command);
         }

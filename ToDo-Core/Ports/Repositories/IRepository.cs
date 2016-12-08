@@ -2,6 +2,6 @@
 {
     public interface IRepository<T> where T : IEntity
     {
-        void Add(T newEntity);
+        T Add(T newEntity);
     }
 }

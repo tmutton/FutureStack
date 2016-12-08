@@ -13,10 +13,11 @@ namespace ToDoCore.Adaptors.Repositories
             _uow = uow;
         }
 
-        public void Add(ToDoItem newEntity)
+        public ToDoItem Add(ToDoItem newEntity)
         {
-            _uow.ToDoItems.Add(newEntity);
+             var savedItem = _uow.ToDoItems.Add(newEntity);
             _uow.SaveChanges();
+            return savedItem.Entity;
         }
     }
 }

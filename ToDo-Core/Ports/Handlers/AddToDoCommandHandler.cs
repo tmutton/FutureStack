@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using paramore.brighter.commandprocessor;
 using ToDoCore.Adaptors.Db;
+using ToDoCore.Adaptors.Repositories;
 using ToDoCore.Model;
 using ToDoCore.Ports.Commands;
 
@@ -19,9 +20,8 @@ namespace ToDoCore.Ports.Handlers
         {
             using (var uow = new ToDoContext(_options))
             {
-                var todo = new ToDoItem {Title = command.Title};
-                uow.ToDoItems.Add(todo);
-                uow.SaveChanges();
+                var repository = new ToDoItemRepository(uow);
+                repository.Add(new ToDoItem {Title = command.Title});
             }
             return base.Handle(command);
         }

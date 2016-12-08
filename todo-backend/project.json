@@ -21,7 +21,7 @@
     "ToDo-Core": { "target": "project" },
     "SimpleInjector.Integration.AspNetCore.Mvc": "3.3.0",
     "Microsoft.EntityFrameworkCore.Sqlite":"1.1.0"
-  },
+ },
 
   "tools": {
     "Microsoft.AspNetCore.Server.IISIntegration.Tools": "1.1.0-preview4-final"

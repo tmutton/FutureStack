@@ -14,9 +14,15 @@ namespace FutureStack.Controllers
     public class ToDoController : Controller
     {
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IActionResult Get()
         {
-            return new string[] {"value1", "value2"};
+            var options = new DbContextOptionsBuilder<ToDoContext>()
+                .UseSqlServer(@"Server=localhost;Database=ToDo;Trusted_Connection=True;")
+                .Options;
+            var retriever = new ToDoViewModelRetriever(options);
+            var toDos = retriever.Get(1, 10);
+
+            return Ok(toDos);
         }
 
         [HttpGet("{id}", Name = "GetTodo")]

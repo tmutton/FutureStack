@@ -16,9 +16,18 @@ namespace ToDoCore.Adaptors.ViewModelRetrievers
             _options = options;
         }
 
-        public IEnumerable<ToDoViewModel> Get()
+        public IEnumerable<ToDoViewModel> Get(int pageIndex, int pageSize)
         {
-            throw new System.NotImplementedException();
+            using (var uow = new ToDoContext(_options))
+            {
+                var items = uow.ToDoItems.Skip(pageIndex - 1 * pageSize).Take(pageSize).ToArray();
+                var viewmodels = new ToDoViewModel[items.Length];
+                for (int i = 0; i < items.Length; i++)
+                {
+                    viewmodels[i] = new ToDoViewModel(items[i]);
+                }
+                return viewmodels;
+            }
         }
 
         public ToDoViewModel Get(int id)

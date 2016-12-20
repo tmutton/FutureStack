@@ -22,7 +22,10 @@ namespace FutureStack.Controllers
         [HttpGet("{id}", Name = "GetTodo")]
         public IActionResult GetById(int id)
         {
-            var retriever = new ToDoViewModelRetriever();
+            var options = new DbContextOptionsBuilder<ToDoContext>()
+                .UseSqlServer(@"Server=localhost;Database=ToDo;Trusted_Connection=True;")
+                .Options;
+             var retriever = new ToDoViewModelRetriever(options);
             var toDo = retriever.Get(id);
 
             return Ok(toDo);
@@ -42,10 +45,10 @@ namespace FutureStack.Controllers
             var handler = new AddToDoCommandHandler(options);
             handler.Handle(addToDoCommand);
 
-            var retriever = new ToDoViewModelRetriever();
+            var retriever = new ToDoViewModelRetriever(options);
             var addedToDo = retriever.Get(addToDoCommand.ToDoItemId);
 
-            return CreatedAtRoute("GetTodo", new { id = addedToDo.First().Id }, addedToDo);
+            return CreatedAtRoute("GetTodo", new { id = addedToDo.Id }, addedToDo);
         }
    }
 }

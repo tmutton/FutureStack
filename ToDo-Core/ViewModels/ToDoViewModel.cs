@@ -1,8 +1,14 @@
-﻿namespace ToDoCore.ViewModels
+﻿using ToDoCore.Model;
+
+namespace ToDoCore.ViewModels
 {
     public class ToDoViewModel : IViewModel
     {
-        public ToDoViewModel() {}
+        public ToDoViewModel(ToDoItem item)
+        {
+            Id = item.Id;
+            Title = item.Title;
+        }
 
         public ToDoViewModel(int id, string title)
         {

@@ -5,6 +5,7 @@ namespace ToDoCore.ViewModelRetrievers
 {
     public interface IViewModelRetriever<T> where T : IViewModel
     {
-        IEnumerable<T> Get(int id);
+        T Get(int id);
+        IEnumerable<T> Get();
     }
 }

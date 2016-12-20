@@ -11,7 +11,7 @@ namespace ToDo
     public class AddToDoCommandHandlerFixture
     {
         [Test]
-        public void Test_Adding_A_Command()
+        public void Test_Adding_A_Task()
         {
             /*
                 Given that I have a command to add a ToDo

@@ -27,7 +27,7 @@ namespace FutureStack.Controllers
             var retriever = new ToDoQueryAllHandler(_dbContextOptions);
             var toDos = retriever.Execute(new ToDoQueryAll(1, 10));
 
-            return Ok(toDos);
+            return Ok(toDos.ToDoItems);
         }
 
         [HttpGet("{id}", Name = "GetTodo")]
@@ -44,11 +44,8 @@ namespace FutureStack.Controllers
         [HttpPost]
         public IActionResult Post([FromBody]AddToDoRequest request)
         {
-            var addToDoCommand = new AddToDoCommand(title: request.Title);
+            var addToDoCommand = new AddToDoCommand(request.Title);
 
-            // Need to do this by command processor send, but baby steps, don't want to mess with
-            //var handler = new AddToDoCommandHandler(_dbContextOptions);
-            //handler.Handle(addToDoCommand);
             _commandProcessor.Send(addToDoCommand);
 
             var retriever = new ToDoByIdQueryHandler(_dbContextOptions);

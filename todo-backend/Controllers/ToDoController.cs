@@ -61,7 +61,7 @@ namespace FutureStack.Controllers
         [HttpDelete]
         public IActionResult Delete([FromBody]DeleteToDoRequest request)
         {
-            var deleteToDoCommand = new DeleteToDoCommand(request.Id);
+            var deleteToDoCommand = new DeleteToDoByIdCommand(request.Id);
 
             _commandProcessor.Send(deleteToDoCommand);
 

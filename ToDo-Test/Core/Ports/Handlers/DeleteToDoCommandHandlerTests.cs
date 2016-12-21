@@ -1,6 +1,8 @@
+using System;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
+using paramore.brighter.commandprocessor;
 using ToDoCore.Adaptors.Db;
 using ToDoCore.Model;
 using ToDoCore.Ports.Handlers;
@@ -12,12 +14,12 @@ namespace ToDo_Test.Core.Ports.Handlers
     public class DeleteToDoCommandHandlerTests
     {
         [Test]
-        public void Deleting_a_Task()
+        public void Deleting_ToDo_By_Id()
         {
             /*
-              Given that I have a command to delete a ToDo
-              When I handle that command
-              Then I should remove the Task from the list of Tasks
+              Given that I have a ToDo in the database
+              When I issue a command to delete the ToDo with that Id
+              Then I should remove the ToDo from the database
           */
 
             var options = new DbContextOptionsBuilder<ToDoContext>()
@@ -31,8 +33,8 @@ namespace ToDo_Test.Core.Ports.Handlers
                 context.SaveChanges();
             }
 
-            var command = new DeleteToDoCommand(toDoItem.Id);
-            var handler = new DeleteToDoCommandHandler(options);
+            var command = new DeleteToDoByIdCommand(toDoItem.Id);
+            var handler = new DeleteToDoByIdCommandHandler(options);
 
             handler.Handle(command);
 
@@ -43,6 +45,57 @@ namespace ToDo_Test.Core.Ports.Handlers
             }
         }
 
+        [Test]
+        public void Delete_All_ToDos()
+        {
+           /*
+              Given that I have ToDos in my database
+              When I issue a command to delete all of them
+              Then I should remove the ToDos from the database
+          */
+
+           var options = new DbContextOptionsBuilder<ToDoContext>()
+                .UseInMemoryDatabase(databaseName: "Add_writes_to_database")
+                .Options;
+
+            using (var context = new ToDoContext(options))
+            {
+                context.ToDoItems.Add(new ToDoItem() { Title = "Make delete test pass" });
+                context.ToDoItems.Add(new ToDoItem() { Title = "Make delete test pass" });
+                context.SaveChanges();
+            }
+
+            var command = new DeleteAllToDosCommand();
+            var handler = new DeleteAllToDosCommandHandler(options);
+
+            handler.Handle(command);
+
+
+            using (var context = new ToDoContext(options))
+            {
+                Assert.IsFalse(context.ToDoItems.Any());
+            }
+
+        }
 
     }
+
+    public class DeleteAllToDosCommandHandler : RequestHandler<DeleteAllToDosCommand>
+    {
+        private readonly DbContextOptions<ToDoContext> _options;
+
+        public DeleteAllToDosCommandHandler(DbContextOptions<ToDoContext> options)
+        {
+            _options = options;
+        }
+    }
+
+    public class DeleteAllToDosCommand : Command
+    {
+        public DeleteAllToDosCommand() : base(Guid.NewGuid())
+        {
+        }
+    }
+
+
 }

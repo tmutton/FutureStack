@@ -6,16 +6,16 @@ using ToDoCore.Ports.Commands;
 
 namespace ToDoCore.Ports.Handlers
 {
-    public class DeleteToDoCommandHandler : RequestHandler<DeleteToDoCommand>
+    public class DeleteToDoByIdCommandHandler : RequestHandler<DeleteToDoByIdCommand>
     {
         private readonly DbContextOptions<ToDoContext> _dbContextOptions;
 
-        public DeleteToDoCommandHandler(DbContextOptions<ToDoContext> dbContextOptions)
+        public DeleteToDoByIdCommandHandler(DbContextOptions<ToDoContext> dbContextOptions)
         {
             _dbContextOptions = dbContextOptions;
         }
 
-        public override DeleteToDoCommand Handle(DeleteToDoCommand command)
+        public override DeleteToDoByIdCommand Handle(DeleteToDoByIdCommand command)
         {
             using (var uow = new ToDoContext(_dbContextOptions))
             {

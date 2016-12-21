@@ -24,7 +24,7 @@ namespace ToDo_Test.Core.Ports.Handlers
                 .UseInMemoryDatabase(databaseName: "Retrieving_tasks_from_database")
                 .Options;
 
-            var toDoItem = new ToDoItem(){Title = "Make test pass"};
+            var toDoItem = new ToDoItem(){Title = "Make test pass", Completed = false};
             using (var context = new ToDoContext(options))
             {
                 context.ToDoItems.Add(toDoItem);
@@ -36,6 +36,7 @@ namespace ToDo_Test.Core.Ports.Handlers
 
             Assert.AreEqual(toDoItem.Id, task.Id);
             Assert.AreEqual(toDoItem.Title, task.Title);
+            Assert.AreEqual(toDoItem.Completed, task.Completed);
 
         }
 

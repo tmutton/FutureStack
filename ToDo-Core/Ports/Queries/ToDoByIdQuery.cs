@@ -24,10 +24,12 @@ namespace ToDoCore.Ports.Queries
             {
                 Id = toDoItem.Id;
                 Title = toDoItem.Title;
+                Completed = toDoItem.Completed;
             }
 
             public int Id { get; }
             public string Title { get; }
+            public bool Completed { get; }
         }
     }
 }

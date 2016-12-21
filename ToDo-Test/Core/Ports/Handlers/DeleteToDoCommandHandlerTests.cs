@@ -1,12 +1,12 @@
-using System;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
-using paramore.brighter.commandprocessor;
 using ToDoCore.Adaptors.Db;
 using ToDoCore.Model;
 using ToDoCore.Ports.Handlers;
 using ToDoCore.Ports.Commands;
+using ToDoCore.Ports.Commands;
+using ToDoCore.Ports.Handlers;
 
 namespace ToDo_Test.Core.Ports.Handlers
 {
@@ -79,23 +79,4 @@ namespace ToDo_Test.Core.Ports.Handlers
         }
 
     }
-
-    public class DeleteAllToDosCommandHandler : RequestHandler<DeleteAllToDosCommand>
-    {
-        private readonly DbContextOptions<ToDoContext> _options;
-
-        public DeleteAllToDosCommandHandler(DbContextOptions<ToDoContext> options)
-        {
-            _options = options;
-        }
-    }
-
-    public class DeleteAllToDosCommand : Command
-    {
-        public DeleteAllToDosCommand() : base(Guid.NewGuid())
-        {
-        }
-    }
-
-
 }

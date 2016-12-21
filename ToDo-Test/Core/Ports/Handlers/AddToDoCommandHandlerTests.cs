@@ -25,7 +25,7 @@ namespace ToDo
                 .UseInMemoryDatabase(databaseName: "Add_writes_to_database")
                 .Options;
 
-            var command = new AddToDoCommand(title:TODO_TITLE) ;
+            var command = new AddToDoCommand(title:TODO_TITLE, completed: true) ;
             var handler = new AddToDoCommandHandler(options);
 
             handler.Handle(command);
@@ -34,6 +34,7 @@ namespace ToDo
             {
                 Assert.AreEqual(1, context.ToDoItems.Count());
                 Assert.AreEqual(TODO_TITLE, context.ToDoItems.Single().Title);
+                Assert.AreEqual(true, context.ToDoItems.Single().Completed);
             }
         }
     }

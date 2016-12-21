@@ -5,8 +5,6 @@ using ToDoCore.Adaptors.Db;
 using ToDoCore.Model;
 using ToDoCore.Ports.Handlers;
 using ToDoCore.Ports.Commands;
-using ToDoCore.Ports.Commands;
-using ToDoCore.Ports.Handlers;
 
 namespace ToDo_Test.Core.Ports.Handlers
 {

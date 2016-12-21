@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using paramore.brighter.commandprocessor;
 using ToDoCore.Adaptors.Db;
@@ -27,6 +29,11 @@ namespace FutureStack.Controllers
             var retriever = new ToDoQueryAllHandler(_dbContextOptions);
             var toDos = retriever.Execute(new ToDoQueryAll(1, 10));
 
+            foreach (var toDoItem in toDos.ToDoItems)
+            {
+                toDoItem.Url = Url.RouteUrl("GetTodo", new { id = toDoItem.Id }, protocol: Request.Scheme);
+            }
+
             return Ok(toDos.ToDoItems);
         }
 
@@ -35,6 +42,7 @@ namespace FutureStack.Controllers
         {
              var retriever = new ToDoByIdQueryHandler(_dbContextOptions);
             var toDo = retriever.Execute(new ToDoByIdQuery(id));
+            toDo.Url = Url.RouteUrl("GetTodo", new { id = toDo.Id }, protocol: Request.Scheme);
 
             return Ok(toDo);
 
@@ -51,6 +59,7 @@ namespace FutureStack.Controllers
             var retriever = new ToDoByIdQueryHandler(_dbContextOptions);
             var addedToDo = retriever.Execute(new ToDoByIdQuery(addToDoCommand.ToDoItemId));
 
+            addedToDo.Url = Url.RouteUrl("GetTodo", new { id = addedToDo.Id }, protocol: Request.Scheme);
             return CreatedAtRoute("GetTodo", new { id = addedToDo.Id }, addedToDo);
         }
 

@@ -30,6 +30,8 @@ namespace ToDoCore.Ports.Queries
             public int Id { get; }
             public string Title { get; }
             public bool Completed { get; }
+
+            public string Url { get; set; }
         }
     }
 }

@@ -11,13 +11,17 @@ namespace FutureStack.Controllers
     [Route("api/[controller]")]
     public class ToDoController : Controller
     {
+        private readonly DbContextOptions<ToDoContext> _dbContextOptions;
+
+        public ToDoController(DbContextOptions<ToDoContext> dbContextOptions)
+        {
+            _dbContextOptions = dbContextOptions;
+        }
+
         [HttpGet]
         public IActionResult Get()
         {
-            var options = new DbContextOptionsBuilder<ToDoContext>()
-                .UseSqlServer(@"Server=localhost;Database=ToDo;Trusted_Connection=True;")
-                .Options;
-            var retriever = new ToDoQueryAllHandler(options);
+            var retriever = new ToDoQueryAllHandler(_dbContextOptions);
             var toDos = retriever.Execute(new ToDoQueryAll(1, 10));
 
             return Ok(toDos);
@@ -26,10 +30,7 @@ namespace FutureStack.Controllers
         [HttpGet("{id}", Name = "GetTodo")]
         public IActionResult GetById(int id)
         {
-            var options = new DbContextOptionsBuilder<ToDoContext>()
-                .UseSqlServer(@"Server=localhost;Database=ToDo;Trusted_Connection=True;")
-                .Options;
-             var retriever = new ToDoByIdQueryHandler(options);
+             var retriever = new ToDoByIdQueryHandler(_dbContextOptions);
             var toDo = retriever.Execute(new ToDoByIdQuery(id));
 
             return Ok(toDo);
@@ -40,16 +41,13 @@ namespace FutureStack.Controllers
         [HttpPost]
         public IActionResult Post([FromBody]AddToDoRequest request)
         {
-            var options = new DbContextOptionsBuilder<ToDoContext>()
-                .UseSqlServer(@"Server=localhost;Database=ToDo;Trusted_Connection=True;")
-                .Options;
             var addToDoCommand = new AddToDoCommand(title: request.Title);
 
             // Need to do this by command processor send, but baby steps, don't want to mess with
-            var handler = new AddToDoCommandHandler(options);
+            var handler = new AddToDoCommandHandler(_dbContextOptions);
             handler.Handle(addToDoCommand);
 
-            var retriever = new ToDoByIdQueryHandler(options);
+            var retriever = new ToDoByIdQueryHandler(_dbContextOptions);
             var addedToDo = retriever.Execute(new ToDoByIdQuery(addToDoCommand.ToDoItemId));
 
             return CreatedAtRoute("GetTodo", new { id = addedToDo.Id }, addedToDo);

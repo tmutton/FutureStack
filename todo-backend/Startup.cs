@@ -20,7 +20,7 @@ namespace FutureStack
 {
     public class Startup
     {
-        private Container container = new Container();
+        private readonly Container _container = new Container();
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -47,7 +47,7 @@ namespace FutureStack
             services.AddApplicationInsightsTelemetry(Configuration);
 
             services.AddDbContext<ToDoContext>(options =>
-                    options.UseSqlite("Data Source=ToDoDb.sqlite"));
+                    options.UseSqlite("Data Source=./ToDoDb.sqlite"));
 
             services.AddMvc();
 
@@ -58,17 +58,17 @@ namespace FutureStack
                 );
             });
 
-            services.AddSingleton<IControllerActivator>(new SimpleInjectorControllerActivator(container));
-            services.AddSingleton<IViewComponentActivator>(new SimpleInjectorViewComponentActivator(container));
+            services.AddSingleton<IControllerActivator>(new SimpleInjectorControllerActivator(_container));
+            services.AddSingleton<IViewComponentActivator>(new SimpleInjectorViewComponentActivator(_container));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            app.UseSimpleInjectorAspNetRequestScoping(container);
-            container.Options.DefaultScopedLifestyle = new AspNetRequestLifestyle();
+            app.UseSimpleInjectorAspNetRequestScoping(_container);
+            _container.Options.DefaultScopedLifestyle = new AspNetRequestLifestyle();
             InitializeContainer(app);
-            container.Verify();
+            _container.Verify();
 
 
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
@@ -82,19 +82,21 @@ namespace FutureStack
             app.UseApplicationInsightsExceptionTelemetry();
 
             app.UseMvc();
+
+            EnsureDatabaseCreated();
         }
 
         private void InitializeContainer(IApplicationBuilder app)
         {
             // Add application presentation components:
-            container.RegisterMvcControllers(app);
-            container.RegisterMvcViewComponents(app);
+            _container.RegisterMvcControllers(app);
+            _container.RegisterMvcViewComponents(app);
 
             RegisterCommandProcessor();
 
             // Cross-wire ASP.NET services (if any). For instance:
-            container.RegisterSingleton(app.ApplicationServices.GetService<ILoggerFactory>());
-            container.RegisterSingleton(app.ApplicationServices.GetService<DbContextOptions<ToDoContext>>());
+            _container.RegisterSingleton(app.ApplicationServices.GetService<ILoggerFactory>());
+            _container.RegisterSingleton(app.ApplicationServices.GetService<DbContextOptions<ToDoContext>>());
             // NOTE: Prevent cross-wired instances as much as possible.
             // See: https://simpleinjector.org/blog/2016/07/
         }
@@ -104,7 +106,7 @@ namespace FutureStack
         {
             //create handler 
             var subscriberRegistry = new SubscriberRegistry();
-            container.Register<IHandleRequests<AddToDoCommand>, AddToDoCommandHandler>(Lifestyle.Scoped);
+            _container.Register<IHandleRequests<AddToDoCommand>, AddToDoCommandHandler>(Lifestyle.Scoped);
             subscriberRegistry.Register<AddToDoCommand, AddToDoCommandHandler>();
 
             //create policies
@@ -112,7 +114,7 @@ namespace FutureStack
             var circuitBreakerPolicy = Policy.Handle<Exception>().CircuitBreaker(1, TimeSpan.FromMilliseconds(500));
             var policyRegistry = new PolicyRegistry() { { CommandProcessor.RETRYPOLICY, retryPolicy }, { CommandProcessor.CIRCUITBREAKER, circuitBreakerPolicy } };
 
-            var servicesHandlerFactory = new ServicesHandlerFactory(container);
+            var servicesHandlerFactory = new ServicesHandlerFactory(_container);
 
             var commandProcessor = CommandProcessorBuilder.With()
                 .Handlers(new HandlerConfiguration(subscriberRegistry, servicesHandlerFactory))
@@ -121,7 +123,7 @@ namespace FutureStack
                 .RequestContextFactory(new InMemoryRequestContextFactory())
                 .Build();
 
-            container.RegisterSingleton<IAmACommandProcessor>(commandProcessor);
+            _container.RegisterSingleton<IAmACommandProcessor>(commandProcessor);
         }
 
         private class ServicesHandlerFactory : IAmAHandlerFactory
@@ -142,6 +144,15 @@ namespace FutureStack
             {
                 var disposable = handler as IDisposable;
                 disposable?.Dispose();
+            }
+        }
+
+        private void EnsureDatabaseCreated()
+        {
+            var contextOptions = _container.GetInstance<DbContextOptions<ToDoContext>>();
+            using (var context = new ToDoContext(contextOptions))
+            {
+                context.Database.EnsureCreated();
             }
         }
     }

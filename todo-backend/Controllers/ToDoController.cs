@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using paramore.brighter.commandprocessor;
 using ToDoCore.Adaptors.Db;
 using ToDoCore.Ports.Commands;
 using ToDoCore.Ports.Handlers;
@@ -12,10 +13,12 @@ namespace FutureStack.Controllers
     public class ToDoController : Controller
     {
         private readonly DbContextOptions<ToDoContext> _dbContextOptions;
+        private readonly IAmACommandProcessor _commandProcessor;
 
-        public ToDoController(DbContextOptions<ToDoContext> dbContextOptions)
+        public ToDoController(DbContextOptions<ToDoContext> dbContextOptions, IAmACommandProcessor commandProcessor)
         {
             _dbContextOptions = dbContextOptions;
+            _commandProcessor = commandProcessor;
         }
 
         [HttpGet]
@@ -44,15 +47,32 @@ namespace FutureStack.Controllers
             var addToDoCommand = new AddToDoCommand(title: request.Title);
 
             // Need to do this by command processor send, but baby steps, don't want to mess with
-            var handler = new AddToDoCommandHandler(_dbContextOptions);
-            handler.Handle(addToDoCommand);
+            //var handler = new AddToDoCommandHandler(_dbContextOptions);
+            //handler.Handle(addToDoCommand);
+            _commandProcessor.Send(addToDoCommand);
 
             var retriever = new ToDoByIdQueryHandler(_dbContextOptions);
             var addedToDo = retriever.Execute(new ToDoByIdQuery(addToDoCommand.ToDoItemId));
 
             return CreatedAtRoute("GetTodo", new { id = addedToDo.Id }, addedToDo);
         }
+
+
+        [HttpDelete]
+        public IActionResult Delete([FromBody]DeleteToDoRequest request)
+        {
+            var deleteToDoCommand = new DeleteToDoCommand(request.Id);
+
+            _commandProcessor.Send(deleteToDoCommand);
+
+            return Ok();
+        }
    }
+
+    public class DeleteToDoRequest
+    {
+        public int Id { get; set; }
+    }
 }
 
 

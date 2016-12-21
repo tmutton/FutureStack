@@ -6,7 +6,7 @@ using ToDoCore.Model;
 using ToDoCore.Ports.Handlers;
 using ToDoCore.Ports.Queries;
 
-namespace ToDo
+namespace ToDo_Test.Core.Ports.Handlers
 {
     [TestFixture]
     public class ToDoQueryHandlerTests

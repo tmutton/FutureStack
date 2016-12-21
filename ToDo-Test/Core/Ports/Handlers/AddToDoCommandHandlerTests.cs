@@ -20,12 +20,13 @@ namespace ToDo
 
             */
             const string TODO_TITLE = "test_title";
+            const int ORDER_NUM = 10;
 
             var options = new DbContextOptionsBuilder<ToDoContext>()
                 .UseInMemoryDatabase(databaseName: "Add_writes_to_database")
                 .Options;
 
-            var command = new AddToDoCommand(title:TODO_TITLE, completed: true) ;
+            var command = new AddToDoCommand(title:TODO_TITLE, completed: true, order: ORDER_NUM) ;
             var handler = new AddToDoCommandHandler(options);
 
             handler.Handle(command);
@@ -35,6 +36,7 @@ namespace ToDo
                 Assert.AreEqual(1, context.ToDoItems.Count());
                 Assert.AreEqual(TODO_TITLE, context.ToDoItems.Single().Title);
                 Assert.AreEqual(true, context.ToDoItems.Single().Completed);
+                Assert.AreEqual(ORDER_NUM,  context.ToDoItems.Single().Order.Value);
             }
         }
     }

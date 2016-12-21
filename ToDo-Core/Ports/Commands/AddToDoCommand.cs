@@ -8,15 +8,17 @@ namespace ToDoCore.Ports.Commands
     {
         public string Title { get; }
         public bool Commpleted { get; }
+        public int? Order { get; }
 
         //out
         public int ToDoItemId { get; set; }
 
-        public AddToDoCommand(string title, bool completed = false)
+        public AddToDoCommand(string title, bool completed = false, int? order = null)
             : base(Guid.NewGuid())
         {
             Title = title;
             Commpleted = completed;
+            Order = order;
         }
 
     }

@@ -52,7 +52,7 @@ namespace FutureStack.Controllers
         [HttpPost]
         public IActionResult Post([FromBody]AddToDoRequest request)
         {
-            var addToDoCommand = new AddToDoCommand(request.Title);
+            var addToDoCommand = new AddToDoCommand(request.Title, request.Completed, request.Order);
 
             _commandProcessor.Send(addToDoCommand);
 

@@ -2,13 +2,14 @@
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using ToDoCore.Adaptors.Db;
-using ToDoCore.Adaptors.ViewModelRetrievers;
 using ToDoCore.Model;
+using ToDoCore.Ports.Handlers;
+using ToDoCore.Ports.Queries;
 
-namespace ToDoTest.Core.Adaptors.ViewModelRetrievers
+namespace ToDo
 {
     [TestFixture]
-    public class ToDoViewModelRetrieverTests
+    public class ToDoQueryHandlerTests
     {
         [Test]
         public void Test_Retrieveing_A_Task()
@@ -30,8 +31,8 @@ namespace ToDoTest.Core.Adaptors.ViewModelRetrievers
                 context.SaveChanges();
             }
 
-            var retriever = new ToDoViewModelRetriever(options);
-            var task = retriever.Get(toDoItem.Id);
+            var retriever = new ToDoByIdQueryHandler(options);
+            var task = retriever.Execute(new ToDoByIdQuery(toDoItem.Id));
 
             Assert.AreEqual(toDoItem.Id, task.Id);
             Assert.AreEqual(toDoItem.Title, task.Title);
@@ -62,11 +63,11 @@ namespace ToDoTest.Core.Adaptors.ViewModelRetrievers
                 context.SaveChanges();
             }
 
-            var retriever = new ToDoViewModelRetriever(options);
-            var taskList = retriever.Get(1, 3);
-            Assert.AreEqual(taskList.Count(), 3);
-            taskList = retriever.Get(2, 3);   //only two available on this page
-            Assert.AreEqual(taskList.Count(), 2);
+            var retriever = new ToDoQueryAllHandler(options);
+            var request = retriever.Execute(new ToDoQueryAll(1, 3));
+            Assert.AreEqual(request.ToDoItems.Count(), 3);
+            request = retriever.Execute(new ToDoQueryAll(2, 3));   //only two available on this page
+            Assert.AreEqual(request.ToDoItems.Count(), 2);
 
 
 

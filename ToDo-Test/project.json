@@ -10,6 +10,7 @@
         "ToDo-Core" : {
             "target" : "project"
         },
+        "Darker": "0.6.0"
     },
 
     "testRunner": "nunit",

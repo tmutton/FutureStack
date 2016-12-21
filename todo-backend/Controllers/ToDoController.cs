@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ToDoCore.Adaptors.Db;
-using ToDoCore.Adaptors.ViewModelRetrievers;
 using ToDoCore.Ports.Commands;
 using ToDoCore.Ports.Handlers;
+using ToDoCore.Ports.Queries;
 using ToDoCore.ViewModels;
 
 namespace FutureStack.Controllers
@@ -19,8 +17,8 @@ namespace FutureStack.Controllers
             var options = new DbContextOptionsBuilder<ToDoContext>()
                 .UseSqlServer(@"Server=localhost;Database=ToDo;Trusted_Connection=True;")
                 .Options;
-            var retriever = new ToDoViewModelRetriever(options);
-            var toDos = retriever.Get(1, 10);
+            var retriever = new ToDoQueryAllHandler(options);
+            var toDos = retriever.Execute(new ToDoQueryAll(1, 10));
 
             return Ok(toDos);
         }
@@ -31,8 +29,8 @@ namespace FutureStack.Controllers
             var options = new DbContextOptionsBuilder<ToDoContext>()
                 .UseSqlServer(@"Server=localhost;Database=ToDo;Trusted_Connection=True;")
                 .Options;
-             var retriever = new ToDoViewModelRetriever(options);
-            var toDo = retriever.Get(id);
+             var retriever = new ToDoByIdQueryHandler(options);
+            var toDo = retriever.Execute(new ToDoByIdQuery(id));
 
             return Ok(toDo);
 
@@ -51,8 +49,8 @@ namespace FutureStack.Controllers
             var handler = new AddToDoCommandHandler(options);
             handler.Handle(addToDoCommand);
 
-            var retriever = new ToDoViewModelRetriever(options);
-            var addedToDo = retriever.Get(addToDoCommand.ToDoItemId);
+            var retriever = new ToDoByIdQueryHandler(options);
+            var addedToDo = retriever.Execute(new ToDoByIdQuery(addToDoCommand.ToDoItemId));
 
             return CreatedAtRoute("GetTodo", new { id = addedToDo.Id }, addedToDo);
         }

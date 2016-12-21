@@ -109,10 +109,12 @@ namespace FutureStack
             _container.Register<IHandleRequests<AddToDoCommand>, AddToDoCommandHandler>(Lifestyle.Scoped);
             _container.Register<IHandleRequests<DeleteAllToDosCommand>, DeleteAllToDosCommandHandler>(Lifestyle.Scoped);
             _container.Register<IHandleRequests<DeleteToDoByIdCommand>, DeleteToDoByIdCommandHandler>(Lifestyle.Scoped);
+            _container.Register<IHandleRequests<UpdateToDoCommand>, UpdateToDoCommandHandler>(Lifestyle.Scoped);
 
             subscriberRegistry.Register<AddToDoCommand, AddToDoCommandHandler>();
             subscriberRegistry.Register<DeleteAllToDosCommand, DeleteAllToDosCommandHandler>();
             subscriberRegistry.Register<DeleteToDoByIdCommand, DeleteToDoByIdCommandHandler>();
+            subscriberRegistry.Register<UpdateToDoCommand, UpdateToDoCommandHandler>();
 
             //create policies
             var retryPolicy = Policy.Handle<Exception>().WaitAndRetry(new[] { TimeSpan.FromMilliseconds(50), TimeSpan.FromMilliseconds(100), TimeSpan.FromMilliseconds(150) });

@@ -83,6 +83,28 @@ namespace FutureStack.Controllers
 
             return Ok();
         }
+
+
+        [HttpPatch("{id}")]
+        public IActionResult Patch(int id, [FromBody]UpdateToDoRequest request)
+        {
+            var updatedCommand = new UpdateToDoCommand(id, request.Title, request.Completed);
+            _commandProcessor.Send(updatedCommand);
+
+            var retriever = new ToDoByIdQueryHandler(_dbContextOptions);
+            var addedToDo = retriever.Execute(new ToDoByIdQuery(id));
+
+            addedToDo.Url = Url.RouteUrl("GetTodo", new { id = addedToDo.Id }, protocol: Request.Scheme);
+
+            return Ok(addedToDo);
+        }
+    }
+
+    public class UpdateToDoRequest
+    {
+        public string Title { get; set; }
+        public bool? Completed { get; set; }
+
     }
 }
 

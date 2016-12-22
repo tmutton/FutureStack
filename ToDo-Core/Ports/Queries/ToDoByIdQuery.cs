@@ -25,12 +25,13 @@ namespace ToDoCore.Ports.Queries
                 Id = toDoItem.Id;
                 Title = toDoItem.Title;
                 Completed = toDoItem.Completed;
+                Order = toDoItem.Order;
             }
 
             public int Id { get; }
             public string Title { get; }
             public bool Completed { get; }
-
+            public int? Order { get; }
             public string Url { get; set; }
         }
     }

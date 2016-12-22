@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using paramore.brighter.commandprocessor;
+using ToDo;
 using ToDoCore.Adaptors.Db;
 using ToDoCore.Ports.Commands;
 using ToDoCore.Ports.Handlers;
@@ -88,7 +89,7 @@ namespace FutureStack.Controllers
         [HttpPatch("{id}")]
         public IActionResult Patch(int id, [FromBody]UpdateToDoRequest request)
         {
-            var updatedCommand = new UpdateToDoCommand(id, request.Title, request.Completed);
+            var updatedCommand = new UpdateToDoCommand(id, request.Title, request.Completed, request.Order);
             _commandProcessor.Send(updatedCommand);
 
             var retriever = new ToDoByIdQueryHandler(_dbContextOptions);
@@ -98,13 +99,6 @@ namespace FutureStack.Controllers
 
             return Ok(addedToDo);
         }
-    }
-
-    public class UpdateToDoRequest
-    {
-        public string Title { get; set; }
-        public bool? Completed { get; set; }
-
     }
 }
 

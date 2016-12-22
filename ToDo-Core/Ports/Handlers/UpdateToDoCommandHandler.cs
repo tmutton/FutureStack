@@ -28,6 +28,9 @@ namespace ToDoCore.Ports.Handlers
                 if (command.Complete.HasValue)
                     toDoItem.Completed = command.Complete.Value;
 
+                if (command.Order.HasValue)
+                    toDoItem.Order = command.Order.Value;
+
                 uow.SaveChanges();
             }
 

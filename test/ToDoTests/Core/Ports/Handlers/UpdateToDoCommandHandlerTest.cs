@@ -6,7 +6,7 @@ using ToDoCore.Model;
 using ToDoCore.Ports.Commands;
 using ToDoCore.Ports.Handlers;
 
-namespace ToDoTest.Core.Ports.Handlers
+namespace ToDoTests.Core.Ports.Handlers
 {
     public class UpdateToDoCommandHandlerTest
     {

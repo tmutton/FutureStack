@@ -1,16 +1,13 @@
-﻿using Microsoft.AspNetCore.Http.Extensions;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using paramore.brighter.commandprocessor;
-using ToDo;
 using ToDoCore.Adaptors.Db;
 using ToDoCore.Ports.Commands;
 using ToDoCore.Ports.Handlers;
 using ToDoCore.Ports.Queries;
 using ToDoCore.ViewModels;
 
-namespace FutureStack.Controllers
+namespace ToDoApi.Controllers
 {
     [Route("api/[controller]")]
     public class ToDoController : Controller

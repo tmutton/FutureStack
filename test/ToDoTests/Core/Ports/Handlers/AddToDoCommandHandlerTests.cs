@@ -1,11 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.Linq;
+﻿using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using ToDoCore.Adaptors.Db;
 using ToDoCore.Ports.Commands;
 using ToDoCore.Ports.Handlers;
 
-namespace ToDo
+namespace ToDoTests.Core.Ports.Handlers
 {
     [TestFixture]
     public class AddToDoCommandHandlerFixture

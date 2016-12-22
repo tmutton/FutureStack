@@ -1,15 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.0.0
-MinimumVisualStudioVersion = 10.0.0.1
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{9F074231-7B85-46E7-9445-39B6D9E7B40F}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "ToDo-Test", "ToDo-Test\ToDo-Test.xproj", "{E8DC3242-BFA4-4A97-9B25-7086B5DB0716}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "ToDoCore", "src\ToDoCore\ToDoCore.xproj", "{9D6585BF-8E23-4B8F-AD91-E039C696AA63}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "ToDo-Core", "ToDo-Core\ToDo-Core.xproj", "{095183A7-50F2-4302-B0A2-23D12B90FE3D}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "ToDoApi", "src\ToDoApi\ToDoApi.xproj", "{40172447-5ED5-4401-AAAB-C670C2FD257A}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "todo-backend", "todo-backend\todo-backend.xproj", "{AFAA6620-743B-4C39-9E32-58FAEFBF06AA}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "ToDoTests", "test\ToDoTests\ToDoTests.xproj", "{0854EE15-DA4B-4C23-8358-D0D49C160E74}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,23 +17,23 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E8DC3242-BFA4-4A97-9B25-7086B5DB0716}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E8DC3242-BFA4-4A97-9B25-7086B5DB0716}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E8DC3242-BFA4-4A97-9B25-7086B5DB0716}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E8DC3242-BFA4-4A97-9B25-7086B5DB0716}.Release|Any CPU.Build.0 = Release|Any CPU
-		{095183A7-50F2-4302-B0A2-23D12B90FE3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{095183A7-50F2-4302-B0A2-23D12B90FE3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{095183A7-50F2-4302-B0A2-23D12B90FE3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{095183A7-50F2-4302-B0A2-23D12B90FE3D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AFAA6620-743B-4C39-9E32-58FAEFBF06AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AFAA6620-743B-4C39-9E32-58FAEFBF06AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AFAA6620-743B-4C39-9E32-58FAEFBF06AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AFAA6620-743B-4C39-9E32-58FAEFBF06AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D6585BF-8E23-4B8F-AD91-E039C696AA63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D6585BF-8E23-4B8F-AD91-E039C696AA63}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D6585BF-8E23-4B8F-AD91-E039C696AA63}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D6585BF-8E23-4B8F-AD91-E039C696AA63}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40172447-5ED5-4401-AAAB-C670C2FD257A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40172447-5ED5-4401-AAAB-C670C2FD257A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40172447-5ED5-4401-AAAB-C670C2FD257A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40172447-5ED5-4401-AAAB-C670C2FD257A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0854EE15-DA4B-4C23-8358-D0D49C160E74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0854EE15-DA4B-4C23-8358-D0D49C160E74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0854EE15-DA4B-4C23-8358-D0D49C160E74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0854EE15-DA4B-4C23-8358-D0D49C160E74}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{E8DC3242-BFA4-4A97-9B25-7086B5DB0716} = {9F074231-7B85-46E7-9445-39B6D9E7B40F}
+		{0854EE15-DA4B-4C23-8358-D0D49C160E74} = {9F074231-7B85-46E7-9445-39B6D9E7B40F}
 	EndGlobalSection
 EndGlobal

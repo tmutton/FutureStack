@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using ToDoCore.Adaptors.Db;
 using ToDoCore.Model;
-using ToDoCore.Ports.Handlers;
 using ToDoCore.Ports.Commands;
+using ToDoCore.Ports.Handlers;
 
-namespace ToDo_Test.Core.Ports.Handlers
+namespace ToDoTests.Core.Ports.Handlers
 {
     [TestFixture]
     public class DeleteToDoCommandHandlerTests

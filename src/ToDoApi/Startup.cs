@@ -16,7 +16,7 @@ using ToDoCore.Adaptors.Db;
 using ToDoCore.Ports.Commands;
 using ToDoCore.Ports.Handlers;
 
-namespace FutureStack
+namespace ToDoApi
 {
     public class Startup
     {

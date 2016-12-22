@@ -1,4 +1,4 @@
-namespace ToDo
+namespace ToDoCore.ViewModels
 {
     public class UpdateToDoRequest
     {

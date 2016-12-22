@@ -9,7 +9,7 @@
         {
             "taskName": "build",
             "args": [
-                "ToDo-Core", "todo-backend", "ToDo-Test"
+                "src/ToDoCore", "src/ToDoApi", "test/ToDoTests"
             ],
             "isBuildCommand": true,
             "problemMatcher": "$msCompile"

@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using ToDoCore.Adaptors.Db;
@@ -11,7 +12,7 @@ namespace ToDoTests.Core.Ports.Handlers
     public class UpdateToDoCommandHandlerTest
     {
         [Test]
-        public void Test_Updating_a_ToDo_Title()
+        public async Task Test_Updating_a_ToDo_Title()
         {
 
             /*
@@ -35,9 +36,9 @@ namespace ToDoTests.Core.Ports.Handlers
 
 
             var command = new UpdateToDoCommand(toDoItem.Id, title: TODO_TITLE);
-            var handler = new UpdateToDoCommandHandler(options);
+            var handler = new UpdateToDoCommandHandlerAsync(options);
 
-            handler.Handle(command);
+            await handler.HandleAsync(command);
 
             using (var context = new ToDoContext(options))
             {
@@ -48,7 +49,7 @@ namespace ToDoTests.Core.Ports.Handlers
         }
 
         [Test]
-        public void Test_Updating_a_ToDo_Completed()
+        public async Task Test_Updating_a_ToDo_Completed()
         {
 
             /*
@@ -71,9 +72,9 @@ namespace ToDoTests.Core.Ports.Handlers
 
 
             var command = new UpdateToDoCommand(toDoItem.Id, complete: true);
-            var handler = new UpdateToDoCommandHandler(options);
+            var handler = new UpdateToDoCommandHandlerAsync(options);
 
-            handler.Handle(command);
+            await handler.HandleAsync(command);
 
             using (var context = new ToDoContext(options))
             {
@@ -84,7 +85,7 @@ namespace ToDoTests.Core.Ports.Handlers
         }
 
         [Test]
-        public void Test_Updating_a_ToDo_Title_and_Completed()
+        public async Task Test_Updating_a_ToDo_Title_and_Completed()
         {
 
             /*
@@ -109,9 +110,9 @@ namespace ToDoTests.Core.Ports.Handlers
 
 
             var command = new UpdateToDoCommand(toDoItem.Id, title: TODO_TITLE, complete: true);
-            var handler = new UpdateToDoCommandHandler(options);
+            var handler = new UpdateToDoCommandHandlerAsync(options);
 
-            handler.Handle(command);
+            await handler.HandleAsync(command);
 
             using (var context = new ToDoContext(options))
             {
@@ -122,7 +123,7 @@ namespace ToDoTests.Core.Ports.Handlers
         }
 
         [Test]
-        public void Test_Updating_The_ToDo_Order()
+        public async Task Test_Updating_The_ToDo_Order()
         {
             /*
                 Given that I have a command to update a ToDo's complete
@@ -146,9 +147,9 @@ namespace ToDoTests.Core.Ports.Handlers
 
 
             var command = new UpdateToDoCommand(toDoItem.Id, order: NEW_ORDER);
-            var handler = new UpdateToDoCommandHandler(options);
+            var handler = new UpdateToDoCommandHandlerAsync(options);
 
-            handler.Handle(command);
+            await handler.HandleAsync(command);
 
             using (var context = new ToDoContext(options))
             {
@@ -161,7 +162,7 @@ namespace ToDoTests.Core.Ports.Handlers
         }
 
         [Test]
-        public void Test_Updating_The_ToDo_Title_Completed_Order()
+        public async Task Test_Updating_The_ToDo_Title_Completed_Order()
         {
             /*
                 Given that I have a command to update a ToDo's title, complete, & order
@@ -187,9 +188,9 @@ namespace ToDoTests.Core.Ports.Handlers
 
 
             var command = new UpdateToDoCommand(toDoItem.Id, title:NEW_TITLE, complete: NEW_COMPLETED, order: NEW_ORDER);
-            var handler = new UpdateToDoCommandHandler(options);
+            var handler = new UpdateToDoCommandHandlerAsync(options);
 
-            handler.Handle(command);
+            await handler.HandleAsync(command);
 
             using (var context = new ToDoContext(options))
             {

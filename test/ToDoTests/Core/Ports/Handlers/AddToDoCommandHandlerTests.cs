@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using ToDoCore.Adaptors.Db;
@@ -11,7 +12,7 @@ namespace ToDoTests.Core.Ports.Handlers
     public class AddToDoCommandHandlerFixture
     {
         [Test]
-        public void Test_Adding_A_Task()
+        public async Task Test_Adding_A_Task()
         {
             /*
                 Given that I have a command to add a ToDo
@@ -27,9 +28,9 @@ namespace ToDoTests.Core.Ports.Handlers
                 .Options;
 
             var command = new AddToDoCommand(title:TODO_TITLE, completed: true, order: ORDER_NUM) ;
-            var handler = new AddToDoCommandHandler(options);
+            var handler = new AddToDoCommandHandlerAsync(options);
 
-            handler.Handle(command);
+            await handler.HandleAsync(command);
 
             using (var context = new ToDoContext(options))
             {

@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using ToDoCore.Adaptors.Db;
@@ -12,7 +13,7 @@ namespace ToDoTests.Core.Ports.Handlers
     public class ToDoQueryHandlerTests
     {
         [Test]
-        public void Test_Retrieveing_A_Task()
+        public async Task Test_Retrieveing_A_Task()
         {
             /*
                 Given that I have a database with a ToDo
@@ -31,8 +32,8 @@ namespace ToDoTests.Core.Ports.Handlers
                 context.SaveChanges();
             }
 
-            var retriever = new ToDoByIdQueryHandler(options);
-            var task = retriever.Execute(new ToDoByIdQuery(toDoItem.Id));
+            var retriever = new ToDoByIdQueryHandlerAsync(options);
+            var task = await retriever.ExecuteAsync(new ToDoByIdQuery(toDoItem.Id));
 
             Assert.AreEqual(toDoItem.Id, task.Id);
             Assert.AreEqual(toDoItem.Title, task.Title);
@@ -43,7 +44,7 @@ namespace ToDoTests.Core.Ports.Handlers
 
         [Test]
         [Ignore("Skip and take not working under EF Core")]
-        public void Test_Retrieving_All_Tasks()
+        public async Task Test_Retrieving_All_Tasks()
         {
             /*
                 Given that I have a database with many ToDos
@@ -65,8 +66,8 @@ namespace ToDoTests.Core.Ports.Handlers
                 context.SaveChanges();
             }
 
-            var retriever = new ToDoQueryAllHandler(options);
-            var request = retriever.Execute(new ToDoQueryAll(1, 3));
+            var retriever = new ToDoQueryAllHandlerAsync(options);
+            var request = await retriever.ExecuteAsync(new ToDoQueryAll(1, 3));
             Assert.AreEqual(request.ToDoItems.Count(), 3);
             request = retriever.Execute(new ToDoQueryAll(2, 3));   //only two available on this page
             Assert.AreEqual(request.ToDoItems.Count(), 2);

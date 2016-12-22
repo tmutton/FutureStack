@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using ToDoCore.Adaptors.Db;
@@ -12,7 +13,7 @@ namespace ToDoTests.Core.Ports.Handlers
     public class DeleteToDoCommandHandlerTests
     {
         [Test]
-        public void Deleting_ToDo_By_Id()
+        public async Task Deleting_ToDo_By_Id()
         {
             /*
               Given that I have a ToDo in the database
@@ -32,9 +33,9 @@ namespace ToDoTests.Core.Ports.Handlers
             }
 
             var command = new DeleteToDoByIdCommand(toDoItem.Id);
-            var handler = new DeleteToDoByIdCommandHandler(options);
+            var handler = new DeleteToDoByIdCommandHandlerAsync(options);
 
-            handler.Handle(command);
+            await handler.HandleAsync(command);
 
 
             using (var context = new ToDoContext(options))
@@ -44,7 +45,7 @@ namespace ToDoTests.Core.Ports.Handlers
         }
 
         [Test]
-        public void Delete_All_ToDos()
+        public async Task Delete_All_ToDos()
         {
            /*
               Given that I have ToDos in my database
@@ -64,9 +65,9 @@ namespace ToDoTests.Core.Ports.Handlers
             }
 
             var command = new DeleteAllToDosCommand();
-            var handler = new DeleteAllToDosCommandHandler(options);
+            var handler = new DeleteAllToDosCommandHandlerAsync(options);
 
-            handler.Handle(command);
+            await handler.HandleAsync(command);
 
 
             using (var context = new ToDoContext(options))

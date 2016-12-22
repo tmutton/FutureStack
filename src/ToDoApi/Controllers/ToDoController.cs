@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using paramore.brighter.commandprocessor;
 using ToDoCore.Adaptors.Db;
@@ -22,10 +23,10 @@ namespace ToDoApi.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
-            var retriever = new ToDoQueryAllHandler(_dbContextOptions);
-            var toDos = retriever.Execute(new ToDoQueryAll(1, 10));
+            var retriever = new ToDoQueryAllHandlerAsync(_dbContextOptions);
+            var toDos = await retriever.ExecuteAsync(new ToDoQueryAll(1, 10));
 
             foreach (var toDoItem in toDos.ToDoItems)
             {
@@ -36,10 +37,10 @@ namespace ToDoApi.Controllers
         }
 
         [HttpGet("{id}", Name = "GetTodo")]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-             var retriever = new ToDoByIdQueryHandler(_dbContextOptions);
-            var toDo = retriever.Execute(new ToDoByIdQuery(id));
+            var retriever = new ToDoByIdQueryHandlerAsync(_dbContextOptions);
+            var toDo = await retriever.ExecuteAsync(new ToDoByIdQuery(id));
             toDo.Url = Url.RouteUrl("GetTodo", new { id = toDo.Id }, protocol: Request.Scheme);
 
             return Ok(toDo);
@@ -48,14 +49,14 @@ namespace ToDoApi.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody]AddToDoRequest request)
+        public async Task<IActionResult> Post([FromBody]AddToDoRequest request)
         {
             var addToDoCommand = new AddToDoCommand(request.Title, request.Completed, request.Order);
 
-            _commandProcessor.Send(addToDoCommand);
+            await _commandProcessor.SendAsync(addToDoCommand);
 
-            var retriever = new ToDoByIdQueryHandler(_dbContextOptions);
-            var addedToDo = retriever.Execute(new ToDoByIdQuery(addToDoCommand.ToDoItemId));
+            var retriever = new ToDoByIdQueryHandlerAsync(_dbContextOptions);
+            var addedToDo = await retriever.ExecuteAsync(new ToDoByIdQuery(addToDoCommand.ToDoItemId));
 
             addedToDo.Url = Url.RouteUrl("GetTodo", new { id = addedToDo.Id }, protocol: Request.Scheme);
             return CreatedAtRoute("GetTodo", new { id = addedToDo.Id }, addedToDo);
@@ -63,34 +64,34 @@ namespace ToDoApi.Controllers
 
 
         [HttpDelete("{id}") ]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var deleteToDoCommand = new DeleteToDoByIdCommand(id);
 
-            _commandProcessor.Send(deleteToDoCommand);
+            await _commandProcessor.SendAsync(deleteToDoCommand);
 
             return Ok();
         }
 
         [HttpDelete]
-        public IActionResult Delete()
+        public async Task <IActionResult> Delete()
         {
             var deleteAllToDosCommand = new DeleteAllToDosCommand();
 
-            _commandProcessor.Send(deleteAllToDosCommand);
+            await _commandProcessor.SendAsync(deleteAllToDosCommand);
 
             return Ok();
         }
 
 
         [HttpPatch("{id}")]
-        public IActionResult Patch(int id, [FromBody]UpdateToDoRequest request)
+        public async Task<IActionResult> Patch(int id, [FromBody]UpdateToDoRequest request)
         {
             var updatedCommand = new UpdateToDoCommand(id, request.Title, request.Completed, request.Order);
-            _commandProcessor.Send(updatedCommand);
+            await _commandProcessor.SendAsync(updatedCommand);
 
-            var retriever = new ToDoByIdQueryHandler(_dbContextOptions);
-            var addedToDo = retriever.Execute(new ToDoByIdQuery(id));
+            var retriever = new ToDoByIdQueryHandlerAsync(_dbContextOptions);
+            var addedToDo = await retriever.ExecuteAsync(new ToDoByIdQuery(id));
 
             addedToDo.Url = Url.RouteUrl("GetTodo", new { id = addedToDo.Id }, protocol: Request.Scheme);
 

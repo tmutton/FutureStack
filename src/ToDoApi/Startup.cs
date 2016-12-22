@@ -106,22 +106,22 @@ namespace ToDoApi
         {
             //create handler 
             var subscriberRegistry = new SubscriberRegistry();
-            _container.Register<IHandleRequests<AddToDoCommand>, AddToDoCommandHandler>(Lifestyle.Scoped);
-            _container.Register<IHandleRequests<DeleteAllToDosCommand>, DeleteAllToDosCommandHandler>(Lifestyle.Scoped);
-            _container.Register<IHandleRequests<DeleteToDoByIdCommand>, DeleteToDoByIdCommandHandler>(Lifestyle.Scoped);
-            _container.Register<IHandleRequests<UpdateToDoCommand>, UpdateToDoCommandHandler>(Lifestyle.Scoped);
+            _container.Register<IHandleRequestsAsync<AddToDoCommand>, AddToDoCommandHandlerAsync>(Lifestyle.Scoped);
+            _container.Register<IHandleRequestsAsync<DeleteAllToDosCommand>, DeleteAllToDosCommandHandlerAsync>(Lifestyle.Scoped);
+            _container.Register<IHandleRequestsAsync<DeleteToDoByIdCommand>, DeleteToDoByIdCommandHandlerAsync>(Lifestyle.Scoped);
+            _container.Register<IHandleRequestsAsync<UpdateToDoCommand>, UpdateToDoCommandHandlerAsync>(Lifestyle.Scoped);
 
-            subscriberRegistry.Register<AddToDoCommand, AddToDoCommandHandler>();
-            subscriberRegistry.Register<DeleteAllToDosCommand, DeleteAllToDosCommandHandler>();
-            subscriberRegistry.Register<DeleteToDoByIdCommand, DeleteToDoByIdCommandHandler>();
-            subscriberRegistry.Register<UpdateToDoCommand, UpdateToDoCommandHandler>();
+            subscriberRegistry.RegisterAsync<AddToDoCommand, AddToDoCommandHandlerAsync>();
+            subscriberRegistry.RegisterAsync<DeleteAllToDosCommand, DeleteAllToDosCommandHandlerAsync>();
+            subscriberRegistry.RegisterAsync<DeleteToDoByIdCommand, DeleteToDoByIdCommandHandlerAsync>();
+            subscriberRegistry.RegisterAsync<UpdateToDoCommand, UpdateToDoCommandHandlerAsync>();
 
             //create policies
             var retryPolicy = Policy.Handle<Exception>().WaitAndRetry(new[] { TimeSpan.FromMilliseconds(50), TimeSpan.FromMilliseconds(100), TimeSpan.FromMilliseconds(150) });
             var circuitBreakerPolicy = Policy.Handle<Exception>().CircuitBreaker(1, TimeSpan.FromMilliseconds(500));
             var policyRegistry = new PolicyRegistry() { { CommandProcessor.RETRYPOLICY, retryPolicy }, { CommandProcessor.CIRCUITBREAKER, circuitBreakerPolicy } };
 
-            var servicesHandlerFactory = new ServicesHandlerFactory(_container);
+            var servicesHandlerFactory = new ServicesHandlerFactoryAsync(_container);
 
             var commandProcessor = CommandProcessorBuilder.With()
                 .Handlers(new HandlerConfiguration(subscriberRegistry, servicesHandlerFactory))
@@ -133,21 +133,21 @@ namespace ToDoApi
             _container.RegisterSingleton<IAmACommandProcessor>(commandProcessor);
         }
 
-        private class ServicesHandlerFactory : IAmAHandlerFactory
+        private class ServicesHandlerFactoryAsync : IAmAHandlerFactoryAsync
         {
             private readonly Container _serviceProvider;
 
-            public ServicesHandlerFactory(Container serviceProvider)
+            public ServicesHandlerFactoryAsync(Container serviceProvider)
             {
                 _serviceProvider = serviceProvider;
 
             }
-            public IHandleRequests Create(Type handlerType)
+            public IHandleRequestsAsync Create(Type handlerType)
             {
-                return _serviceProvider.GetInstance(handlerType) as IHandleRequests;
+                return _serviceProvider.GetInstance(handlerType) as IHandleRequestsAsync;
             }
 
-            public void Release(IHandleRequests handler)
+            public void Release(IHandleRequestsAsync handler)
             {
                 var disposable = handler as IDisposable;
                 disposable?.Dispose();

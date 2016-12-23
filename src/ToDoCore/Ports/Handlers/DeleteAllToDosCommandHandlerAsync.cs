@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using paramore.brighter.commandprocessor;
+using paramore.brighter.commandprocessor.logging.Attributes;
 using ToDoCore.Adaptors.Db;
 using ToDoCore.Adaptors.Repositories;
 using ToDoCore.Ports.Commands;
@@ -17,6 +18,7 @@ namespace ToDoCore.Ports.Handlers
             _options = options;
         }
 
+        [RequestLoggingAsync(step: 1, timing: HandlerTiming.Before)]
         public override  async Task<DeleteAllToDosCommand > HandleAsync(DeleteAllToDosCommand command, CancellationToken? ct = null)
         {
             using (var uow = new ToDoContext(_options))

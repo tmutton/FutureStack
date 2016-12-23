@@ -3,6 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Darker;
 using Microsoft.EntityFrameworkCore;
+using paramore.brighter.commandprocessor;
+using paramore.brighter.commandprocessor.logging.Attributes;
 using ToDoCore.Adaptors.Db;
 using ToDoCore.Ports.Queries;
 
@@ -17,6 +19,7 @@ namespace ToDoCore.Ports.Handlers
             _options = options;
         }
 
+        [RequestLoggingAsync(step: 1, timing: HandlerTiming.Before)]
         public override async Task<ToDoByIdQuery.Result> ExecuteAsync(ToDoByIdQuery request, CancellationToken cancellationToken = default(CancellationToken))
         {
            using (var uow = new ToDoContext(_options))

@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using paramore.brighter.commandprocessor;
 using Polly;
+using Serilog;
 using SimpleInjector;
 using SimpleInjector.Integration.AspNetCore;
 using SimpleInjector.Integration.AspNetCore.Mvc;
@@ -20,9 +21,19 @@ namespace ToDoApi
 {
     public class Startup
     {
-        private readonly Container _container = new Container();
+        private readonly Container _container ;
         public Startup(IHostingEnvironment env)
         {
+            //use a sensible constructor resolution approach
+            _container = new Container();
+            _container.Options.ConstructorResolutionBehavior = new MostResolvableConstructorBehavior(_container);
+
+            // log to stdout (12 factor app)
+            Log.Logger = new LoggerConfiguration()
+                .Enrich.FromLogContext()
+                .WriteTo.Console()
+                .CreateLogger();
+
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
@@ -63,17 +74,15 @@ namespace ToDoApi
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IApplicationLifetime appLifetime)
         {
             app.UseSimpleInjectorAspNetRequestScoping(_container);
             _container.Options.DefaultScopedLifestyle = new AspNetRequestLifestyle();
             InitializeContainer(app);
             _container.Verify();
 
-
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-            loggerFactory.AddDebug();
-
+            loggerFactory.AddSerilog();
+            appLifetime.ApplicationStopped.Register(Log.CloseAndFlush);
 
             app.UseCors("AllowAll");
 

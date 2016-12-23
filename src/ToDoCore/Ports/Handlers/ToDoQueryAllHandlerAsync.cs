@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Darker;
+using Darker.Attributes;
 using Microsoft.EntityFrameworkCore;
 using ToDoCore.Adaptors.Db;
 using ToDoCore.Ports.Queries;
@@ -17,6 +18,7 @@ namespace ToDoCore.Ports.Handlers
             _options = options;
         }
 
+        [RequestLogging(1)]
         public override async Task<ToDoQueryAll.Result> ExecuteAsync(ToDoQueryAll request, CancellationToken cancellationToken = new CancellationToken())
         {
             using (var uow = new ToDoContext(_options))

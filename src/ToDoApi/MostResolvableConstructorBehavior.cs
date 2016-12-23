@@ -6,7 +6,7 @@ using SimpleInjector;
 using SimpleInjector.Advanced;
 
 //See: https://simpleinjector.readthedocs.io/en/latest/extensibility.html#overriding-constructor-resolution-behavior
-//Frankly single parameter only constructors are nonsense. But folks want to use SimpleInjector, so we just override its
+//Frankly single constructor only is just nonsense. But folks want to use SimpleInjector, so we just override its
 //behaviour everywhere
 
 namespace ToDoApi

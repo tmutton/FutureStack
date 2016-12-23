@@ -124,11 +124,22 @@ namespace ToDoApi
             registry.Register<ToDoByIdQuery, ToDoByIdQuery.Result, ToDoByIdQueryHandlerAsync>();
             registry.Register<ToDoQueryAll, ToDoQueryAll.Result, ToDoQueryAllHandlerAsync>();
 
+            _container.Register<IQueryHandler<ToDoByIdQuery, ToDoByIdQuery.Result>, ToDoByIdQueryHandlerAsync>(Lifestyle.Scoped);
+            _container.Register<IQueryHandler<ToDoQueryAll, ToDoQueryAll.Result>, ToDoQueryAllHandlerAsync>(Lifestyle.Scoped);
+
+            var retryPolicy = Policy.Handle<Exception>().WaitAndRetryAsync(new[] { TimeSpan.FromMilliseconds(50), TimeSpan.FromMilliseconds(100), TimeSpan.FromMilliseconds(150) });
+            var circuitBreakerPolicy = Policy.Handle<Exception>().CircuitBreakerAsync(1, TimeSpan.FromMilliseconds(500));
+             var policyRegistry = new Darker.PolicyRegistry {{QueryProcessor.RetryPolicyName, retryPolicy}, {QueryProcessor.CircuitBreakerPolicyName, circuitBreakerPolicy}};
+
+            Func<Type, object> simpleFactory = type =>  _container.GetInstance(type);
+
             IQueryProcessor queryProcessor = QueryProcessorBuilder.With()
-                .Handlers(registry, Activator.CreateInstance, Activator.CreateInstance)
-                .DefaultPolicies()
+                .Handlers(registry, simpleFactory, Activator.CreateInstance)
+                .Policies(policyRegistry)
                 .InMemoryRequestContextFactory()
                 .Build();
+            _container.RegisterSingleton<IQueryProcessor>(queryProcessor);
+
         }
 
 

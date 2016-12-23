@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Darker;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using paramore.brighter.commandprocessor;
@@ -15,18 +16,22 @@ namespace ToDoApi.Controllers
     {
         private readonly DbContextOptions<ToDoContext> _dbContextOptions;
         private readonly IAmACommandProcessor _commandProcessor;
+        private readonly IQueryProcessor _queryProcessor;
 
-        public ToDoController(DbContextOptions<ToDoContext> dbContextOptions, IAmACommandProcessor commandProcessor)
+        public ToDoController(
+            DbContextOptions<ToDoContext> dbContextOptions,
+            IAmACommandProcessor commandProcessor,
+            IQueryProcessor queryProcessor)
         {
             _dbContextOptions = dbContextOptions;
             _commandProcessor = commandProcessor;
+            _queryProcessor = queryProcessor;
         }
 
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var retriever = new ToDoQueryAllHandlerAsync(_dbContextOptions);
-            var toDos = await retriever.ExecuteAsync(new ToDoQueryAll(1, 10));
+            var toDos = await _queryProcessor.ExecuteAsync(new ToDoQueryAll(1, 10));
 
             foreach (var toDoItem in toDos.ToDoItems)
             {
@@ -39,8 +44,7 @@ namespace ToDoApi.Controllers
         [HttpGet("{id}", Name = "GetTodo")]
         public async Task<IActionResult> GetById(int id)
         {
-            var retriever = new ToDoByIdQueryHandlerAsync(_dbContextOptions);
-            var toDo = await retriever.ExecuteAsync(new ToDoByIdQuery(id));
+            var toDo = await _queryProcessor.ExecuteAsync(new ToDoByIdQuery(id));
             toDo.Url = Url.RouteUrl("GetTodo", new { id = toDo.Id }, protocol: Request.Scheme);
 
             return Ok(toDo);
@@ -55,10 +59,9 @@ namespace ToDoApi.Controllers
 
             await _commandProcessor.SendAsync(addToDoCommand);
 
-            var retriever = new ToDoByIdQueryHandlerAsync(_dbContextOptions);
-            var addedToDo = await retriever.ExecuteAsync(new ToDoByIdQuery(addToDoCommand.ToDoItemId));
-
+            var addedToDo = await _queryProcessor.ExecuteAsync(new ToDoByIdQuery(addToDoCommand.ToDoItemId));
             addedToDo.Url = Url.RouteUrl("GetTodo", new { id = addedToDo.Id }, protocol: Request.Scheme);
+            
             return CreatedAtRoute("GetTodo", new { id = addedToDo.Id }, addedToDo);
         }
 
@@ -90,9 +93,7 @@ namespace ToDoApi.Controllers
             var updatedCommand = new UpdateToDoCommand(id, request.Title, request.Completed, request.Order);
             await _commandProcessor.SendAsync(updatedCommand);
 
-            var retriever = new ToDoByIdQueryHandlerAsync(_dbContextOptions);
-            var addedToDo = await retriever.ExecuteAsync(new ToDoByIdQuery(id));
-
+            var addedToDo = await _queryProcessor.ExecuteAsync(new ToDoByIdQuery(id));
             addedToDo.Url = Url.RouteUrl("GetTodo", new { id = addedToDo.Id }, protocol: Request.Scheme);
 
             return Ok(addedToDo);

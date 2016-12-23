@@ -19,6 +19,7 @@ namespace ToDoCore.Ports.Handlers
         }
 
         [RequestLogging(1)]
+        [RetryableQuery(2)]
         public override async Task<ToDoQueryAll.Result> ExecuteAsync(ToDoQueryAll request, CancellationToken cancellationToken = new CancellationToken())
         {
             using (var uow = new ToDoContext(_options))

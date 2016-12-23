@@ -1,4 +1,6 @@
 using System;
+using Darker;
+using Darker.Builder;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Controllers;
@@ -16,6 +18,10 @@ using SimpleInjector.Integration.AspNetCore.Mvc;
 using ToDoCore.Adaptors.Db;
 using ToDoCore.Ports.Commands;
 using ToDoCore.Ports.Handlers;
+using ToDoCore.Ports.Queries;
+using HandlerConfiguration = paramore.brighter.commandprocessor.HandlerConfiguration;
+using InMemoryRequestContextFactory = paramore.brighter.commandprocessor.InMemoryRequestContextFactory;
+using PolicyRegistry = paramore.brighter.commandprocessor.PolicyRegistry;
 
 namespace ToDoApi
 {
@@ -103,11 +109,26 @@ namespace ToDoApi
 
             RegisterCommandProcessor();
 
+            RegisterQueryProcessor();
+
             // Cross-wire ASP.NET services (if any). For instance:
             _container.RegisterSingleton(app.ApplicationServices.GetService<ILoggerFactory>());
             _container.RegisterSingleton(app.ApplicationServices.GetService<DbContextOptions<ToDoContext>>());
             // NOTE: Prevent cross-wired instances as much as possible.
             // See: https://simpleinjector.org/blog/2016/07/
+        }
+
+        private void RegisterQueryProcessor()
+        {
+            var registry = new QueryHandlerRegistry();
+            registry.Register<ToDoByIdQuery, ToDoByIdQuery.Result, ToDoByIdQueryHandlerAsync>();
+            registry.Register<ToDoQueryAll, ToDoQueryAll.Result, ToDoQueryAllHandlerAsync>();
+
+            IQueryProcessor queryProcessor = QueryProcessorBuilder.With()
+                .Handlers(registry, Activator.CreateInstance, Activator.CreateInstance)
+                .DefaultPolicies()
+                .InMemoryRequestContextFactory()
+                .Build();
         }
 
 
@@ -126,8 +147,8 @@ namespace ToDoApi
             subscriberRegistry.RegisterAsync<UpdateToDoCommand, UpdateToDoCommandHandlerAsync>();
 
             //create policies
-            var retryPolicy = Policy.Handle<Exception>().WaitAndRetry(new[] { TimeSpan.FromMilliseconds(50), TimeSpan.FromMilliseconds(100), TimeSpan.FromMilliseconds(150) });
-            var circuitBreakerPolicy = Policy.Handle<Exception>().CircuitBreaker(1, TimeSpan.FromMilliseconds(500));
+            var retryPolicy = Policy.Handle<Exception>().WaitAndRetryAsync(new[] { TimeSpan.FromMilliseconds(50), TimeSpan.FromMilliseconds(100), TimeSpan.FromMilliseconds(150) });
+            var circuitBreakerPolicy = Policy.Handle<Exception>().CircuitBreakerAsync(1, TimeSpan.FromMilliseconds(500));
             var policyRegistry = new PolicyRegistry() { { CommandProcessor.RETRYPOLICY, retryPolicy }, { CommandProcessor.CIRCUITBREAKER, circuitBreakerPolicy } };
 
             var servicesHandlerFactory = new ServicesHandlerFactoryAsync(_container);

@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using paramore.brighter.commandprocessor;
 using ToDoCore.Adaptors.Db;
 using ToDoCore.Ports.Commands;
-using ToDoCore.Ports.Handlers;
 using ToDoCore.Ports.Queries;
 using ToDoCore.ViewModels;
 

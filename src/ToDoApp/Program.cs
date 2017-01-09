@@ -28,8 +28,9 @@ namespace ToDoApp
 
 
             var handlerFactory = new ServicesHandlerFactoryAsync(container);
-            var messageMapperFactory = new MessageMapperFactory(container);
             container.Register<IHandleRequestsAsync<BulkAddToDoCommand>, BulkAddToDoCommandHandlerAsync>();
+            var messageMapperFactory = new MessageMapperFactory(container);
+            container.Register<IAmAMessageMapper<BulkAddToDoCommand>, BulkAddToDoMessageMapper>();
 
             var subscriberRegistry = new SubscriberRegistry();
             subscriberRegistry.RegisterAsync<BulkAddToDoCommand, BulkAddToDoCommandHandlerAsync>();

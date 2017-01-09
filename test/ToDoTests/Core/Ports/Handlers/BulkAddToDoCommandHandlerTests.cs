@@ -24,7 +24,7 @@ namespace ToDoTests.Core.Ports.Handlers
             */
 
             var options = new DbContextOptionsBuilder<ToDoContext>()
-                .UseInMemoryDatabase(databaseName: "Add_writes_to_database")
+                .UseInMemoryDatabase(databaseName: "Bulk_adding_tasks")
                 .Options;
 
             var todos = new List<AddToDoRequest>

@@ -9,7 +9,7 @@ using SimpleInjector.Advanced;
 //Frankly single constructor only is just nonsense. But folks want to use SimpleInjector, so we just override its
 //behaviour everywhere
 
-namespace ToDoApi
+namespace ToDoCore.Adaptors
 {
     public class MostResolvableConstructorBehavior : IConstructorResolutionBehavior {
         private readonly Container container;

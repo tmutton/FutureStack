@@ -8,7 +8,8 @@
      "paramore.brighter.commandprocessor" : "7.0.62-beta",
      "Microsoft.EntityFrameworkCore.Relational" : "1.1.0",
      "Microsoft.EntityFrameworkCore.SqlServer" : "1.1.0",
-     "Darker": "0.6.0"
+     "Darker": "0.6.0",
+     "SimpleInjector" : "3.3.2"
   },
   "frameworks": {
     "netstandard1.6": {

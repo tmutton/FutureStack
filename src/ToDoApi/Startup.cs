@@ -15,6 +15,8 @@ using Serilog;
 using SimpleInjector;
 using SimpleInjector.Integration.AspNetCore;
 using SimpleInjector.Integration.AspNetCore.Mvc;
+using ToDoCore.Adaptors;
+using ToDoCore.Adaptors.BrighterFactories;
 using ToDoCore.Adaptors.Db;
 using ToDoCore.Ports.Commands;
 using ToDoCore.Ports.Handlers;
@@ -25,7 +27,7 @@ using PolicyRegistry = paramore.brighter.commandprocessor.PolicyRegistry;
 
 namespace ToDoApi
 {
-    public class Startup
+    public partial class Startup
     {
         private readonly Container _container ;
         public Startup(IHostingEnvironment env)
@@ -172,27 +174,6 @@ namespace ToDoApi
                 .Build();
 
             _container.RegisterSingleton<IAmACommandProcessor>(commandProcessor);
-        }
-
-        private class ServicesHandlerFactoryAsync : IAmAHandlerFactoryAsync
-        {
-            private readonly Container _serviceProvider;
-
-            public ServicesHandlerFactoryAsync(Container serviceProvider)
-            {
-                _serviceProvider = serviceProvider;
-
-            }
-            public IHandleRequestsAsync Create(Type handlerType)
-            {
-                return _serviceProvider.GetInstance(handlerType) as IHandleRequestsAsync;
-            }
-
-            public void Release(IHandleRequestsAsync handler)
-            {
-                var disposable = handler as IDisposable;
-                disposable?.Dispose();
-            }
         }
 
         private void EnsureDatabaseCreated()

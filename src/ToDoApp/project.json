@@ -1,0 +1,26 @@
+﻿{
+  "version": "1.0.0-*",
+  "buildOptions": {
+    "debugType": "portable",
+    "emitEntryPoint": true
+  },
+  "dependencies": {
+      "ToDoCore": { "target": "project" },
+      "paramore.brighter.commandprocessor": "7.0.62-beta",
+      "paramore.brighter.commandprocessor.messaginggateway.rmq": "7.0.62-beta",
+      "paramore.brighter.serviceactivator": "7.0.62-beta",
+      "Serilog.Sinks.Console": "2.1.0",
+      "Serilog": "2.3.0"
+  },
+  "frameworks": {
+    "netcoreapp1.0": {
+      "dependencies": {
+        "Microsoft.NETCore.App": {
+          "type": "platform",
+          "version": "1.0.1"
+        }
+      },
+      "imports": "dnxcore50"
+    }
+  }
+}

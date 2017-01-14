@@ -23,18 +23,18 @@ namespace ToDoCore.Ports.Handlers
         [RequestLoggingAsync(step: 1, timing: HandlerTiming.Before)]
         [UsePolicyAsync(policy: CommandProcessor.CIRCUITBREAKER, step:2)]
         [UsePolicyAsync(policy: CommandProcessor.RETRYPOLICY, step: 3)]
-        public override async Task<AddToDoCommand> HandleAsync(AddToDoCommand command, CancellationToken? ct = null)
+        public override async Task<AddToDoCommand> HandleAsync(AddToDoCommand command, CancellationToken cancellationToken = new CancellationToken())
         {
             using (var uow = new ToDoContext(_options))
             {
                 var repository = new ToDoItemRepositoryAsync(uow);
                 var savedItem = await repository.AddAsync(
                     new ToDoItem {Title = command.Title, Completed = command.Commpleted, Order = command.Order},
-                    ct ?? default(CancellationToken)
+                    cancellationToken
                 );
                 command.ToDoItemId = savedItem.Id;
             }
-            return await base.HandleAsync(command, ct);
+            return await base.HandleAsync(command, cancellationToken);
         }
     }
 }

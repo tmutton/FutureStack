@@ -67,5 +67,24 @@ namespace ToDoTests.Core.Ports.Mappers
             Assert.AreEqual(command.ToDos.First().Order, 1);
             Assert.AreEqual(command.ToDos.First().Completed, false);
         }
+
+        [Test]
+        public void Test_Loading_Bulk_Add_ToDo_From_Json()
+        {
+            /*
+             Given that I have a JSON request body
+             When I try to convert it to a BulkAddToDoRequest
+             Then I will succeed if the JSON is well formed
+             */
+
+            var requestAddToDo = new AddToDoRequest {Completed = false, Title = "blah"};
+            var bulkRequest = new BulkAddToDoRequest();
+            bulkRequest.ItemsToAdd.Add(requestAddToDo);
+
+            var as_json = JsonConvert.SerializeObject(bulkRequest);
+            Assert.IsNotNull(as_json);
+            var as_object = JsonConvert.DeserializeObject(as_json) as BulkAddToDoRequest;
+            Assert.IsNotNull(as_object);
+        }
     }
 }

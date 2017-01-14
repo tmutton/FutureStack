@@ -26,7 +26,44 @@ namespace ToDoApp
             var container = new Container();
             container.Options.ConstructorResolutionBehavior = new MostResolvableConstructorBehavior(container);
 
+            //Exchange
+            var rmqConnnection = new RmqMessagingGatewayConnection
+            {
+                AmpqUri = new AmqpUriSpecification(new Uri("amqp://guest:guest@localhost:5672/%2f")),
+                Exchange = new Exchange("future.stack.exchange"),
+            };
 
+            var rmqMessageConsumerFactory = new RmqMessageConsumerFactory(rmqConnnection);
+            var rmqMessageProducerFactory = new RmqMessageProducerFactory(rmqConnnection);
+
+            // Channels (Message Routing)
+            var connections = new List<Connection>
+            {
+                new paramore.brighter.serviceactivator.Connection(
+                    new ConnectionName("future.stack.todo"),
+                    new InputChannelFactory(rmqMessageConsumerFactory, rmqMessageProducerFactory),
+                    typeof(BulkAddToDoCommand),
+                    new ChannelName("bulkaddtodo.command"),
+                    "bulkaddtodo.command",
+                    timeoutInMilliseconds: 200)
+            };
+
+            var dispatcher = CreateDispatcher(container, connections, rmqMessageConsumerFactory, rmqMessageProducerFactory);
+
+            dispatcher.Receive();
+
+            Console.WriteLine("Press Enter to stop ...");
+            Console.ReadLine();
+
+            dispatcher.End().Wait();
+        }
+
+        private static Dispatcher CreateDispatcher(
+            Container container,
+            List<Connection> connections, RmqMessageConsumerFactory rmqMessageConsumerFactory,
+            RmqMessageProducerFactory rmqMessageProducerFactory
+        )
+        {
             var handlerFactory = new ServicesHandlerFactoryAsync(container);
             container.Register<IHandleRequestsAsync<BulkAddToDoCommand>, BulkAddToDoCommandHandlerAsync>();
             var messageMapperFactory = new MessageMapperFactory(container);
@@ -61,28 +98,6 @@ namespace ToDoApp
                 {typeof(BulkAddToDoCommand), typeof(BulkAddToDoMessageMapper)}
             };
 
-            //create the gateway
-            var rmqConnnection = new RmqMessagingGatewayConnection
-            {
-                AmpqUri  = new AmqpUriSpecification(new Uri("amqp://guest:guest@localhost:5672/%2f")),
-                Exchange = new Exchange("future.stack.exchange"),
-            };
-
-            var rmqMessageConsumerFactory = new RmqMessageConsumerFactory(rmqConnnection );
-            var rmqMessageProducerFactory = new RmqMessageProducerFactory(rmqConnnection );
-
-            // Service Activator connections
-            var connections = new List<paramore.brighter.serviceactivator.Connection>
-            {
-                new paramore.brighter.serviceactivator.Connection(
-                    new ConnectionName("future.stack.todo"),
-                    new InputChannelFactory(rmqMessageConsumerFactory, rmqMessageProducerFactory),
-                    typeof(BulkAddToDoCommand),
-                    new ChannelName("bulkaddtodo.command"),
-                    "bulkaddtodo.command",
-                    timeoutInMilliseconds: 200)
-            };
-
             var builder = DispatchBuilder
                 .With()
                 .CommandProcessor(CommandProcessorBuilder.With()
@@ -97,15 +112,7 @@ namespace ToDoApp
                 .Connections(connections);
 
             var dispatcher = builder.Build();
-
-
-            dispatcher.Receive();
-
-            Console.WriteLine("Press Enter to stop ...");
-            Console.ReadLine();
-
-            dispatcher.End().Wait();
+            return dispatcher;
         }
-
     }
 }

@@ -1,0 +1,7 @@
+POST http://localhost:5000/api/BulkToDo HTTP/1.1
+Host: localhost:5000
+Content-Length: 64
+Content-Type: application/json
+Accept: text/plain, */*; q=0.01Accept-Encodinggzip, deflateAccept-Languageen-GB,en;q=0.5:
+
+{"ItemsToAdd":[{"Title":"blah","Completed":false,"Order":null}]}

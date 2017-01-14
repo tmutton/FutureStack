@@ -2,6 +2,8 @@
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using paramore.brighter.commandprocessor;
+using paramore.brighter.commandprocessor.logging.Attributes;
+using paramore.brighter.commandprocessor.policy.Attributes;
 using ToDoCore.Adaptors.Db;
 using ToDoCore.Adaptors.Repositories;
 using ToDoCore.Model;
@@ -18,8 +20,10 @@ namespace ToDoCore.Ports.Handlers
             _options = options;
         }
 
-        public override async Task<BulkAddToDoCommand> HandleAsync(BulkAddToDoCommand command,
-            CancellationToken? ct = null)
+        [RequestLoggingAsync(step: 1, timing: HandlerTiming.Before)]
+        [UsePolicyAsync(policy: CommandProcessor.CIRCUITBREAKER, step:2)]
+        [UsePolicyAsync(policy: CommandProcessor.RETRYPOLICY, step: 3)]
+        public override async Task<BulkAddToDoCommand> HandleAsync(BulkAddToDoCommand command, CancellationToken cancellationToken = new CancellationToken())
         {
             using (var uow = new ToDoContext(_options))
             {
@@ -28,13 +32,13 @@ namespace ToDoCore.Ports.Handlers
                 {
                     var savedItem = await repository.AddAsync(
                         new ToDoItem {Title = todo.Title, Completed = todo.Completed, Order = todo.Order},
-                        ct ?? default(CancellationToken)
+                        cancellationToken
                     );
 
                     command.ToDoItemIds.Add(savedItem.Id);
                 }
 
-                return await base.HandleAsync(command, ct);
+                return await base.HandleAsync(command, cancellationToken);
             }
         }
     }

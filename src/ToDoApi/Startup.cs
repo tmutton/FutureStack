@@ -10,8 +10,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using paramore.brighter.commandprocessor;
+using paramore.brighter.commandprocessor.messagestore.sqlite;
+using paramore.brighter.commandprocessor.messaginggateway.rmq;
+using paramore.brighter.commandprocessor.messaginggateway.rmq.MessagingGatewayConfiguration;
 using Polly;
-using Serilog;
 using SimpleInjector;
 using SimpleInjector.Integration.AspNetCore;
 using SimpleInjector.Integration.AspNetCore.Mvc;
@@ -20,6 +22,7 @@ using ToDoCore.Adaptors.BrighterFactories;
 using ToDoCore.Adaptors.Db;
 using ToDoCore.Ports.Commands;
 using ToDoCore.Ports.Handlers;
+using ToDoCore.Ports.Mappers;
 using ToDoCore.Ports.Queries;
 using HandlerConfiguration = paramore.brighter.commandprocessor.HandlerConfiguration;
 using InMemoryRequestContextFactory = paramore.brighter.commandprocessor.InMemoryRequestContextFactory;
@@ -36,16 +39,14 @@ namespace ToDoApi
             _container = new Container();
             _container.Options.ConstructorResolutionBehavior = new MostResolvableConstructorBehavior(_container);
 
-            // log to stdout (12 factor app)
-            Log.Logger = new LoggerConfiguration()
-                .Enrich.FromLogContext()
-                .WriteTo.Console()
-                .CreateLogger();
+            BuildConfiguration(env);
+        }
 
+        private void BuildConfiguration(IHostingEnvironment env)
+        {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
 
             if (env.IsEnvironment("Development"))
             {
@@ -57,7 +58,7 @@ namespace ToDoApi
             Configuration = builder.Build();
         }
 
-        public IConfigurationRoot Configuration { get; }
+        public IConfigurationRoot Configuration { get; set;  }
 
         // This method gets called by the runtime. Use this method to add services to the container
         public void ConfigureServices(IServiceCollection services)
@@ -65,15 +66,13 @@ namespace ToDoApi
             // Add framework services.
             services.AddApplicationInsightsTelemetry(Configuration);
 
-            services.AddDbContext<ToDoContext>(options =>
-                    options.UseSqlite("Data Source=./ToDoDb.sqlite"));
+            services.AddDbContext<ToDoContext>(options => options.UseSqlite("Data Source=./ToDoDb.sqlite"));
 
             services.AddMvc();
 
             services.AddCors(options =>
             {
-                options.AddPolicy("AllowAll",
-                    builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()
+                options.AddPolicy("AllowAll", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()
                 );
             });
 
@@ -86,11 +85,12 @@ namespace ToDoApi
         {
             app.UseSimpleInjectorAspNetRequestScoping(_container);
             _container.Options.DefaultScopedLifestyle = new AspNetRequestLifestyle();
+
             InitializeContainer(app);
             _container.Verify();
 
-            loggerFactory.AddSerilog();
-            appLifetime.ApplicationStopped.Register(Log.CloseAndFlush);
+            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+            loggerFactory.AddDebug();
 
             app.UseCors("AllowAll");
 
@@ -166,10 +166,30 @@ namespace ToDoApi
 
             var servicesHandlerFactory = new ServicesHandlerFactoryAsync(_container);
 
+            var messagingGatewayConfiguration = RmqGatewayBuilder.With.Uri(new Uri("amqp://guest:guest@localhost:5672/%2f")).Exchange("future.stack.exchange").DefaultQueues();
+
+            var gateway = new RmqMessageProducer(messagingGatewayConfiguration);
+            var sqlMessageStore = new SqliteMessageStore(new SqliteMessageStoreConfiguration("Data Source = messages.sqlite", "Messages"));
+
+            var messageMapperFactory = new MessageMapperFactory(_container);
+            _container.Register<IAmAMessageMapper<BulkAddToDoCommand>, BulkAddToDoMessageMapper>();
+
+            var messageMapperRegistry = new MessageMapperRegistry(messageMapperFactory)
+            {
+                {typeof(BulkAddToDoCommand), typeof(BulkAddToDoMessageMapper)}
+            };
+
+            var messagingConfiguration = new MessagingConfiguration(
+                messageStore: null,
+                asyncMessageStore: sqlMessageStore,
+                messageProducer: gateway,
+                asyncmessageProducer:null,
+                messageMapperRegistry: messageMapperRegistry);
+
             var commandProcessor = CommandProcessorBuilder.With()
                 .Handlers(new HandlerConfiguration(subscriberRegistry, servicesHandlerFactory))
                 .Policies(policyRegistry)
-                .NoTaskQueues()
+                .TaskQueues(messagingConfiguration)
                 .RequestContextFactory(new InMemoryRequestContextFactory())
                 .Build();
 

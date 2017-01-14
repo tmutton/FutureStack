@@ -13,6 +13,10 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "ToDoTests", "test\ToDoTests
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "ToDoApp", "src\ToDoApp\ToDoApp.xproj", "{EEEE3EA1-914F-4D7A-96F6-128CF08CBDF9}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Admin", "Admin", "{23A1976A-3D92-4283-A550-F3DEF9A88916}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "CreateMessageDatabase", "src\Admin\CreateMessageDatabase\CreateMessageDatabase.xproj", "{C86B2C32-8B61-42B6-AD80-CCD1BB49389C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,11 +39,16 @@ Global
 		{EEEE3EA1-914F-4D7A-96F6-128CF08CBDF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EEEE3EA1-914F-4D7A-96F6-128CF08CBDF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EEEE3EA1-914F-4D7A-96F6-128CF08CBDF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C86B2C32-8B61-42B6-AD80-CCD1BB49389C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C86B2C32-8B61-42B6-AD80-CCD1BB49389C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C86B2C32-8B61-42B6-AD80-CCD1BB49389C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C86B2C32-8B61-42B6-AD80-CCD1BB49389C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{0854EE15-DA4B-4C23-8358-D0D49C160E74} = {9F074231-7B85-46E7-9445-39B6D9E7B40F}
+		{C86B2C32-8B61-42B6-AD80-CCD1BB49389C} = {23A1976A-3D92-4283-A550-F3DEF9A88916}
 	EndGlobalSection
 EndGlobal

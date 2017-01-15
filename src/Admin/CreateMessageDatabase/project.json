@@ -6,7 +6,7 @@
   },
   "dependencies": {
       "Microsoft.Extensions.CommandLineUtils" : "1.1.0",
-      "paramore.brighter.commandprocessor.messagestore.sqlite" : "7.0.63-beta"
+      "paramore.brighter.commandprocessor.messagestore.sqlite" : "7.0.65-beta"
   },
   "frameworks": {
     "netcoreapp1.0": {

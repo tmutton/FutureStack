@@ -34,7 +34,7 @@ after_build:
   - cmd: dotnet pack src/ToDoCore/project.json --configuration Release --no-build --output nupkgs
 
 test_script:
-  - cmd: dotnet test src/ToDoTests/project.json --result=futurestack.xml
+  - cmd: dotnet test test/ToDoTests/project.json --result=futurestack.xml
   - ps: (New-Object 'System.Net.WebClient').UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\futurestack.xml))
 
 artifacts:

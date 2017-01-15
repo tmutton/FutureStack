@@ -5,12 +5,10 @@ RUN mkdir -p /usr/todo
 WORKDIR /usr/todo
 
 # copy the source code
-COPY .. /usr/todo
+COPY . /usr/todo
 
 # restore the dependencies
-WORKDIR /usr/todo/src/ToDoCore
-RUN dotnet restore
-WORKDIR /usr/todo/src/ToDoAPI
+WORKDIR /usr/todo/
 RUN dotnet restore
 
 # Build the site

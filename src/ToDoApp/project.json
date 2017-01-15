@@ -10,7 +10,7 @@
       "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.1.0",
       "Microsoft.Extensions.Configuration.FileExtensions": "1.1.0",
       "Microsoft.Extensions.Configuration.Json": "1.1.0",
-      "ToDoCore": "1.0.5",
+      "ToDoCore": "1.0.4",
       "paramore.brighter.commandprocessor": "7.0.65-beta",
       "paramore.brighter.commandprocessor.messaginggateway.rmq": "7.0.65-beta",
       "paramore.brighter.serviceactivator": "7.0.65-beta",

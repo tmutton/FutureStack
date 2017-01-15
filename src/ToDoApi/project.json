@@ -20,7 +20,7 @@
     "Microsoft.EntityFrameworkCore.SqlServer" : "1.1.0",
     "Microsoft.EntityFrameworkCore.Sqlite":"1.1.0",
     "SimpleInjector.Integration.AspNetCore.Mvc": "3.3.0",
-    "ToDoCore": "1.0.5",
+    "ToDoCore": "1.0.4",
     "paramore.brighter.commandprocessor" : "7.0.65-beta",
     "paramore.brighter.commandprocessor.messagestore.sqlite" : "7.0.65-beta",
     "paramore.brighter.commandprocessor.messaginggateway.rmq": "7.0.65-beta"

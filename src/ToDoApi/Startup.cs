@@ -66,7 +66,7 @@ namespace ToDoApi
             // Add framework services.
             services.AddApplicationInsightsTelemetry(Configuration);
 
-            services.AddDbContext<ToDoContext>(options => options.UseSqlite("Data Source=./ToDoDb.sqlite"));
+            services.AddDbContext<ToDoContext>(options => options.UseSqlite(Configuration["Database:ToDo"]));
 
             services.AddMvc();
 
@@ -174,10 +174,10 @@ namespace ToDoApi
 
             var servicesHandlerFactory = new ServicesHandlerFactoryAsync(_container);
 
-            var messagingGatewayConfiguration = RmqGatewayBuilder.With.Uri(new Uri("amqp://guest:guest@localhost:5672/%2f")).Exchange("future.stack.exchange").DefaultQueues();
+            var messagingGatewayConfiguration = RmqGatewayBuilder.With.Uri(new Uri(Configuration["RabbitMQ:Uri"])).Exchange(Configuration["RabbitMQ:Exchange"]).DefaultQueues();
 
             var gateway = new RmqMessageProducer(messagingGatewayConfiguration);
-            var sqlMessageStore = new SqliteMessageStore(new SqliteMessageStoreConfiguration("Data Source = messages.sqlite", "Messages"));
+            var sqlMessageStore = new SqliteMessageStore(new SqliteMessageStoreConfiguration(Configuration["Database:MessageStore"], Configuration["Database:MessageTableName"]));
 
             var messageMapperFactory = new MessageMapperFactory(_container);
             _container.Register<IAmAMessageMapper<BulkAddToDoCommand>, BulkAddToDoMessageMapper>();

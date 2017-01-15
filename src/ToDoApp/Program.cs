@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using paramore.brighter.commandprocessor;
 using paramore.brighter.commandprocessor.messaginggateway.rmq;
 using paramore.brighter.commandprocessor.messaginggateway.rmq.MessagingGatewayConfiguration;
@@ -19,6 +20,8 @@ namespace ToDoApp
 {
     internal class Program
     {
+        public static IConfigurationRoot Configuration { get; set;  }
+
         public static void Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration()
@@ -28,9 +31,14 @@ namespace ToDoApp
             var container = new Container();
             container.Options.ConstructorResolutionBehavior = new MostResolvableConstructorBehavior(container);
 
+            var builder = new ConfigurationBuilder()
+                .AddEnvironmentVariables();
+
+           Configuration = builder.Build();
+
             //Database - this won't work, as its not the same Db as the web site, we should switch to Sql Server here
             var options = new DbContextOptionsBuilder<ToDoContext>()
-                .UseSqlite("Data Source=./ToDoDb.sqlite")
+                .UseSqlite(Configuration["Database:ToDo"])
                 .Options;
 
             container.Register(() => options);
@@ -38,8 +46,8 @@ namespace ToDoApp
             //Exchange
             var rmqConnnection = new RmqMessagingGatewayConnection
             {
-                AmpqUri = new AmqpUriSpecification(new Uri("amqp://guest:guest@localhost:5672/%2f")),
-                Exchange = new Exchange("future.stack.exchange"),
+                AmpqUri = new AmqpUriSpecification(new Uri(Configuration["RabbitMQ:Uri"])),
+                Exchange = new Exchange(Configuration["RabbitMQ:Exchange"]),
             };
 
             var rmqMessageConsumerFactory = new RmqMessageConsumerFactory(rmqConnnection);

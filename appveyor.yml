@@ -1,0 +1,45 @@
+version: 1.0.{build}
+pull_requests:
+  do_not_increment_build_number: true
+branches:
+  only:
+  - master
+  # blacklist
+  except:
+    - gh-pages
+skip_tags: true
+configuration: 
+#- Debug
+- Release
+platform: Any CPU
+assembly_info:
+  patch: true
+  file: '**\AssemblyInfo.*'
+  assembly_version: 1.0.0.0
+  assembly_file_version: 1.0.{build}
+  assembly_informational_version: '{version}'
+nuget:
+  project_feed: true
+  disable_publish_on_pr: true
+before_build:
+  - cmd: dotnet --info
+  - cmd: dotnet restore --verbosity Minimal
+  - ps: |
+        Get-ChildItem . -Recurse -Include project.json | ForEach-Object {(Get-Content $PSItem) -Replace "`"version`": `"1\.0\.0-\*`"","`"version`": `"$env:APPVEYOR_BUILD_VERSION`"" | Set-Content -Path $PSItem;}
+
+build_script:
+  - cmd: dotnet build -c Release */**/project.json
+
+after_build:
+  - cmd: dotnet pack src/ToDoCore/project.json --configuration Release --no-build --output nupkgs
+
+test_script:
+  - cmd: dotnet test src/ToDoTests/project.json --result=futurestack.xml
+  - ps: (New-Object 'System.Net.WebClient').UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\futurestack.xml))
+
+artifacts:
+  # pushing all *.nupkg files in build directory recursively
+  - path: '/**/nupkgs/*.nupkg'
+
+cache:
+- '%USERPROFILE%\.nuget\packages'

@@ -5,7 +5,7 @@ RUN mkdir -p /usr/todo
 WORKDIR /usr/todo
 
 # copy the source code
-COPY . /usr/todo
+COPY .. /usr/todo
 
 # restore the dependencies
 WORKDIR /usr/todo/src/ToDoCore

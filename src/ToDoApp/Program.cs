@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 using paramore.brighter.commandprocessor;
 using paramore.brighter.commandprocessor.messaginggateway.rmq;
 using paramore.brighter.commandprocessor.messaginggateway.rmq.MessagingGatewayConfiguration;
@@ -9,6 +10,7 @@ using Serilog;
 using SimpleInjector;
 using ToDoCore.Adaptors;
 using ToDoCore.Adaptors.BrighterFactories;
+using ToDoCore.Adaptors.Db;
 using ToDoCore.Ports.Commands;
 using ToDoCore.Ports.Handlers;
 using ToDoCore.Ports.Mappers;
@@ -26,6 +28,13 @@ namespace ToDoApp
             var container = new Container();
             container.Options.ConstructorResolutionBehavior = new MostResolvableConstructorBehavior(container);
 
+            //Database - this won't work, as its not the same Db as the web site, we should switch to Sql Server here
+            var options = new DbContextOptionsBuilder<ToDoContext>()
+                .UseSqlite("Data Source=./ToDoDb.sqlite")
+                .Options;
+
+            container.Register(() => options);
+
             //Exchange
             var rmqConnnection = new RmqMessagingGatewayConnection
             {
@@ -39,16 +48,20 @@ namespace ToDoApp
             // Channels (Message Routing)
             var connections = new List<Connection>
             {
-                new paramore.brighter.serviceactivator.Connection(
+                new Connection(
                     new ConnectionName("future.stack.todo"),
                     new InputChannelFactory(rmqMessageConsumerFactory, rmqMessageProducerFactory),
                     typeof(BulkAddToDoCommand),
                     new ChannelName("bulkaddtodo.command"),
                     "bulkaddtodo.command",
-                    timeoutInMilliseconds: 200)
+                    timeoutInMilliseconds: 200,
+                    isAsync: true)
             };
 
             var dispatcher = CreateDispatcher(container, connections, rmqMessageConsumerFactory, rmqMessageProducerFactory);
+
+            //Must call once all container registrations complete, as cannnot register post first get.
+            EnsureDatabaseCreated(container);
 
             dispatcher.Receive();
 
@@ -64,7 +77,7 @@ namespace ToDoApp
             RmqMessageProducerFactory rmqMessageProducerFactory
         )
         {
-            var handlerFactory = new ServicesHandlerFactoryAsync(container);
+            var handlerFactoryAsync = new ServicesHandlerFactoryAsync(container);
             container.Register<IHandleRequestsAsync<BulkAddToDoCommand>, BulkAddToDoCommandHandlerAsync>();
             var messageMapperFactory = new MessageMapperFactory(container);
             container.Register<IAmAMessageMapper<BulkAddToDoCommand>, BulkAddToDoMessageMapper>();
@@ -73,23 +86,16 @@ namespace ToDoApp
             subscriberRegistry.RegisterAsync<BulkAddToDoCommand, BulkAddToDoCommandHandlerAsync>();
 
             //create policies
-            var retryPolicy = Policy
-                .Handle<Exception>()
-                .WaitAndRetry(new[]
-                {
-                    TimeSpan.FromMilliseconds(50),
-                    TimeSpan.FromMilliseconds(100),
-                    TimeSpan.FromMilliseconds(150)
-                });
-
-            var circuitBreakerPolicy = Policy
-                .Handle<Exception>()
-                .CircuitBreaker(1, TimeSpan.FromMilliseconds(500));
-
+            var retryPolicy = Policy.Handle<Exception>().WaitAndRetry(new[] { TimeSpan.FromMilliseconds(50), TimeSpan.FromMilliseconds(100), TimeSpan.FromMilliseconds(150) });
+            var circuitBreakerPolicy = Policy.Handle<Exception>().CircuitBreaker(1, TimeSpan.FromMilliseconds(500));
+             var retryPolicyAsync = Policy.Handle<Exception>().WaitAndRetryAsync(new[] { TimeSpan.FromMilliseconds(50), TimeSpan.FromMilliseconds(100), TimeSpan.FromMilliseconds(150) });
+            var circuitBreakerPolicyAsync = Policy.Handle<Exception>().CircuitBreakerAsync(1, TimeSpan.FromMilliseconds(500));
             var policyRegistry = new PolicyRegistry()
             {
-                {CommandProcessor.RETRYPOLICY, retryPolicy},
-                {CommandProcessor.CIRCUITBREAKER, circuitBreakerPolicy}
+                { CommandProcessor.RETRYPOLICY, retryPolicy },
+                { CommandProcessor.CIRCUITBREAKER, circuitBreakerPolicy },
+                { CommandProcessor.RETRYPOLICYASYNC, retryPolicyAsync },
+                { CommandProcessor.CIRCUITBREAKERASYNC, circuitBreakerPolicyAsync }
             };
 
             //create message mappers
@@ -101,7 +107,7 @@ namespace ToDoApp
             var builder = DispatchBuilder
                 .With()
                 .CommandProcessor(CommandProcessorBuilder.With()
-                    .Handlers(new HandlerConfiguration(subscriberRegistry, handlerFactory))
+                    .Handlers(new HandlerConfiguration(subscriberRegistry, handlerFactoryAsync))
                     .Policies(policyRegistry)
                     .NoTaskQueues()
                     .RequestContextFactory(new InMemoryRequestContextFactory())
@@ -114,5 +120,14 @@ namespace ToDoApp
             var dispatcher = builder.Build();
             return dispatcher;
         }
-    }
+
+        private static void EnsureDatabaseCreated(Container container)
+        {
+            var contextOptions = container.GetInstance<DbContextOptions<ToDoContext>>();
+            using (var context = new ToDoContext(contextOptions))
+            {
+                context.Database.EnsureCreated();
+            }
+        }
+     }
 }

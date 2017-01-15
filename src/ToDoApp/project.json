@@ -5,6 +5,7 @@
     "emitEntryPoint": true
   },
   "dependencies": {
+      "Microsoft.EntityFrameworkCore.Sqlite":"1.1.0",
       "ToDoCore": { "target": "project" },
       "paramore.brighter.commandprocessor": "7.0.65-beta",
       "paramore.brighter.commandprocessor.messaginggateway.rmq": "7.0.65-beta",

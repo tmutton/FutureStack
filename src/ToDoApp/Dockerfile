@@ -14,6 +14,6 @@ RUN dotnet restore
 # Build the site
 RUN dotnet build
 
-# Expose the port
+# Run the app
 CMD ["dotnet", "run"]
 

@@ -179,8 +179,7 @@ namespace ToDoApi
             var gateway = new RmqMessageProducer(messagingGatewayConfiguration);
             var sqlMessageStore = new SqliteMessageStore(
                 new SqliteMessageStoreConfiguration(
-                    "Data Source=" + Configuration["Database:MessageStore"],
-                    "Data Source=" + Configuration["Database:MessageTableName"])
+                    "Data Source=" + Configuration["Database:MessageStore"], Configuration["Database:MessageTableName"])
             );
 
             var messageMapperFactory = new MessageMapperFactory(_container);

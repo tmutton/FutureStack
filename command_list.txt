@@ -1,3 +1,9 @@
+# Useful commands for diagnostics 
+docker-machine ip  #ip address of container  192.168.99.100
+docker ps # list all containers
+docker exec -it {CONTAINER NAME} bash # start an interactive bash session in the container identified by name (see docker ps above) 
+
+
 # From FutureStack/src/ToDoApi
 # Build the web app Dockerfile to a named image
 docker build -t todoapi .

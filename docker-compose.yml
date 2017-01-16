@@ -5,8 +5,7 @@ services:
     ports:
       - "5000:5000"
     environment:
-      # You will need to substitute your host IP address i.e. docker-machine ip
-      - RabbitMQ__Uri=amqp://guest:guest@192.168.99.100:5672/%2f
+      - RabbitMQ__Uri=amqp://guest:guest@futurestack_rabbit_1:5672/%2f
       - RabbitMQ__Exchange=future.stack.exchange
       - Database__ToDo=ToDoDb.sqlite
       - Database__MessageStore=messages.sqlite
@@ -24,8 +23,7 @@ services:
   worker:
     build: ./src/ToDoApp
     environment:
-      # You will need to substitute your host IP address i.e. docker-machine ip
-      - RabbitMQ__Uri=amqp://guest:guest@192.168.99.100:5672/%2f
+      - RabbitMQ__Uri=amqp://guest:guest@futurestack_rabbit_1:5672/%2f
       - RabbitMQ__Exchange=future.stack.exchange
       - Database__ToDo=ToDoDb.sqlite
     links:

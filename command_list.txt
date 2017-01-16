@@ -1,0 +1,31 @@
+# From FutureStack/src/ToDoApi
+# Build the web app Dockerfile to a named image
+docker build -t todoapi .
+# Run that image
+docker run -d -p 5000:5000 --env-file env.list todoapi
+# Get the IP address of the host {host:ip}
+docker-machine ip
+# test that we can get something from the web site
+curl -i http://{host:ip}:5000/api/ToDo
+# Find the name of our running container {NAME} 
+docker ps
+# close the running container 
+docker stop {NAME}
+
+# From FutureStack/src/ToDoApp
+docker build -t todoapp .
+#Run that image
+docker run -d --env-file env.list todoapp
+
+# From FutureStack root
+# Docker Compose multiple machines into existence; use --build argument if we need to rebuild i.e. docker-compose up --build
+docker compose up -d 
+# Get the IP address of the host {host:ip}
+docker-machine ip
+# test that we can get something from the web site
+curl -i http://{host:ip}:5000/api/ToDo
+# test that we can see the rmq web site
+curl -i http://{host:ip}:15672/
+# stop the running container
+docker-compose stop
+

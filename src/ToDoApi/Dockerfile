@@ -16,5 +16,5 @@ RUN dotnet build
 
 # Expose the port
 EXPOSE 5000
-CMD ["dotnet", "run"]
+CMD dotnet run --server.urls http://*:5000
 

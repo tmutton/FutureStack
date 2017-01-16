@@ -5,28 +5,28 @@ services:
     ports:
       - "5000:5000"
     environment:
-      - RabbitMQ__Uri=amqp://guest:guest@rabbit:5672/%2f
+      - RabbitMQ__Uri=amqp://guest:guest@todo-broker:5672/%2f
       - RabbitMQ__Exchange=future.stack.exchange
       - Database__ToDo=ToDoDb.sqlite
       - Database__MessageStore=messages.sqlite
       - Database__MessageTableName=Messages
-    links:
-      - rabbit
-    depends_on:
-      - rabbit
-  worker:
-    build: ./src/ToDoApp
-    environment:
-      - RabbitMQ__Uri=amqp://guest:guest@rabbit:5672/%2f
-      - RabbitMQ__Exchange=future.stack.exchange
-      - Database__ToDo=ToDoDb.sqlite
-    links:
-      - rabbit
-    depends_on:
-      - rabbit
+ #   links:
+ #     - rabbit
+ #   depends_on:
+  #    - rabbit
+  # worker:
+  #  build: ./src/ToDoApp
+  #  environment:
+  #    - RabbitMQ__Uri=amqp://guest:guest@todo-broker:5672/%2f
+  #    - RabbitMQ__Exchange=future.stack.exchange
+  #    - Database__ToDo=ToDoDb.sqlite
+  #  links:
+  #    - rabbit
+  #  depends_on:
+  #    - rabbit
   rabbit:
-    hostname: rabbit
-    image: rabbitmq:3.6.0
+    hostname: todo-broker
+    image: rabbitmq:3-management
     ports:
       - "5672:5672"  
       - "15672:15672"  

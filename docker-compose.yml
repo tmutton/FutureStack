@@ -13,7 +13,7 @@ services:
       - Database__MessageTableName=Messages
     links:
       - rabbit:todo_broker
-  reverse-proxy:
+  reverse_proxy:
     image: nginx
     ports:
       - "8080:80"

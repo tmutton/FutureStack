@@ -13,6 +13,14 @@ services:
       - Database__MessageTableName=Messages
     links:
       - rabbit:todo_broker
+  reverse-proxy:
+    image: nginx
+    ports:
+      - "8080:80"
+    depends_on:
+      - web
+    volumes:
+      - ./proxy.conf:/etc/nginx/conf.d/default.conf
   worker:
     build: ./src/ToDoApp
     environment:

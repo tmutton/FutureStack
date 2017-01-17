@@ -5,13 +5,15 @@ services:
     ports:
       - "5000:5000"
     environment:
-      - RabbitMQ__Uri=amqp://guest:guest@futurestack_rabbit_1:5672/%2f
+      - RabbitMQ__Uri=amqp://guest:guest@todo_broker:5672/%2f
       - RabbitMQ__Exchange=future.stack.exchange
       - Database__ToDo=ToDoDb.sqlite
       - Database__MessageStore=messages.sqlite
       - Database__MessageTableName=Messages
     links:
       - rabbit:todo_broker
+    depends_on:
+      - rabbit
   reverse_proxy:
     image: nginx
     ports:
@@ -23,14 +25,13 @@ services:
   worker:
     build: ./src/ToDoApp
     environment:
-      - RabbitMQ__Uri=amqp://guest:guest@futurestack_rabbit_1:5672/%2f
+      - RabbitMQ__Uri=amqp://guest:guest@todo_broker:5672/%2f
       - RabbitMQ__Exchange=future.stack.exchange
       - Database__ToDo=ToDoDb.sqlite
     links:
       - rabbit:todo_broker
+    depends_on:
+      - rabbit
   rabbit:
     hostname: todo_broker
     image: rabbitmq:3-management
-    ports:
-      - "5672:5672"  
-      - "15672:15672"  

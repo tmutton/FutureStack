@@ -1,20 +1,15 @@
-FROM microsoft/dotnet:latest
+FROM microsoft/aspnetcore
 
 # create a directory for the app source code 
 RUN mkdir -p /usr/todo
 WORKDIR /usr/todo
 
 # copy the source code
-COPY . /usr/todo
-
-# restore the dependencies
-WORKDIR /usr/todo/
-RUN dotnet restore
-
-# Build the site
-RUN dotnet build
+COPY out .
 
 # Expose the port
 EXPOSE 5000
-CMD dotnet run --server.urls http://*:5000
+
+#run the site
+ENTRYPOINT["dotnet", "ToDoApi.dll"]
 

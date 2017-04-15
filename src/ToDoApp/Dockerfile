@@ -5,15 +5,8 @@ RUN mkdir -p /usr/todo
 WORKDIR /usr/todo
 
 # copy the source code
-COPY . /usr/todo
-
-# restore the dependencies
-WORKDIR /usr/todo/
-RUN dotnet restore
-
-# Build the site
-RUN dotnet build
+COPY out .
 
 # Run the app
-CMD ["dotnet", "run"]
+ENTRYPOINT ["dotnet", "ToDoApp.dll"]
 

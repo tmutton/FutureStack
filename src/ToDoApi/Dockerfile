@@ -11,5 +11,4 @@ COPY out .
 EXPOSE 5000
 
 #run the site
-ENTRYPOINT["dotnet", "ToDoApi.dll"]
-
+ENTRYPOINT ["dotnet", "ToDoApi.dll"]

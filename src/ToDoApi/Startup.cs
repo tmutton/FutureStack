@@ -4,7 +4,9 @@ using Darker.Builder;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.Mvc.Cors.Internal;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -73,8 +75,12 @@ namespace ToDoApi
 
             services.AddCors(options =>
             {
-                options.AddPolicy("AllowAll", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()
+                options.AddPolicy("AllowAll", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials()
                 );
+            });
+
+            services.Configure<MvcOptions>(options => {
+                options.Filters.Add(new CorsAuthorizationFilterFactory("AllowAll"));
             });
 
             services.AddSingleton<IControllerActivator>(new SimpleInjectorControllerActivator(_container));

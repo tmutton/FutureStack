@@ -12,3 +12,11 @@ Then you can run the project using docker-compose via
 
 docker-compose up -d --build
 
+# Todo-Backend Tests
+Run the tests at: https://www.todobackend.com/specs/index.html
+First, change the test target root: http://{host:ip}:8080/api/ToDo
+
+# Skipping the reverse proxy
+The site should be running on http://{host:ip}:5000/api/ToDo
+
+to skip the proxy

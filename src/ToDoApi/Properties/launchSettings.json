@@ -3,7 +3,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:1115/",
+      "applicationUrl": "http://localhost:5000/",
       "sslPort": 0
     }
   },
@@ -12,11 +12,18 @@
       "commandName": "IISExpress",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "RabbitMQ:Uri": "amqp://guest:guest@localhost:5672/%2f",
+        "Database:MessageTableName": "Messages",
+        "KDatabase:MessageStoreey": "Database:MessageStore",
+        "RabbitMQ:Exchange": "RabbitMQ:Exchange",
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "Database:ToDo": "ToDoDb.sqlite",
+        "Database:MessageStore": "messages.sqlite"
       }
     },
     "ToDoApi": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "applicationUrl": "http://localhost:5000"
     }
   }
 }

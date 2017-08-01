@@ -1,7 +1,7 @@
 version: '2'
 services:
   web:
-    build: ./src/ToDoApi
+    build: ./ToDoBackend/src/ToDoApi
     ports:
       - "5000:5000"
     environment:

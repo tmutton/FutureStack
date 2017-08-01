@@ -23,7 +23,7 @@ services:
     volumes:
       - ./proxy.conf:/etc/nginx/conf.d/default.conf
   worker:
-    build: ./src/ToDoApp
+    build: ./ToDoBackend/src/ToDoApp
     environment:
       - RabbitMQ__Uri=amqp://guest:guest@todo_broker:5672/%2f
       - RabbitMQ__Exchange=future.stack.exchange

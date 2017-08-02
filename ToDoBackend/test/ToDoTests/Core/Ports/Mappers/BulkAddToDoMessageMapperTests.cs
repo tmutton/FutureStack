@@ -4,7 +4,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Bson;
 using NUnit.Framework;
-using paramore.brighter.commandprocessor;
+using Paramore.Brighter;
 using ToDoCore.Ports.Commands;
 using ToDoCore.Ports.Mappers;
 using ToDoCore.ViewModels;

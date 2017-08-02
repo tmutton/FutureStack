@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using Darker;
 using Darker.Attributes;
 using Microsoft.EntityFrameworkCore;
-using paramore.brighter.commandprocessor;
-using paramore.brighter.commandprocessor.logging.Attributes;
+using Paramore.Brighter;
+using Paramore.Brighter.Logging.Attributes;
 using ToDoCore.Adaptors.Db;
 using ToDoCore.Ports.Queries;
 

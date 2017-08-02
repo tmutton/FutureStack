@@ -12,10 +12,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using paramore.brighter.commandprocessor;
-using paramore.brighter.commandprocessor.messagestore.sqlite;
-using paramore.brighter.commandprocessor.messaginggateway.rmq;
-using paramore.brighter.commandprocessor.messaginggateway.rmq.MessagingGatewayConfiguration;
+using Paramore.Brighter;
+using Paramore.Brighter.MessageStore.Sqlite;
+using Paramore.Brighter.MessagingGateway.RMQ;
+using Paramore.Brighter.MessagingGateway.RMQ.MessagingGatewayConfiguration;
 using Polly;
 using SimpleInjector;
 using SimpleInjector.Integration.AspNetCore;
@@ -27,9 +27,8 @@ using ToDoCore.Ports.Commands;
 using ToDoCore.Ports.Handlers;
 using ToDoCore.Ports.Mappers;
 using ToDoCore.Ports.Queries;
-using HandlerConfiguration = paramore.brighter.commandprocessor.HandlerConfiguration;
-using InMemoryRequestContextFactory = paramore.brighter.commandprocessor.InMemoryRequestContextFactory;
-using PolicyRegistry = paramore.brighter.commandprocessor.PolicyRegistry;
+using PolicyRegistry = Paramore.Brighter.PolicyRegistry;
+
 
 namespace ToDoApi
 {
@@ -208,10 +207,10 @@ namespace ToDoApi
                 messageMapperRegistry: messageMapperRegistry);
 
             var commandProcessor = CommandProcessorBuilder.With()
-                .Handlers(new HandlerConfiguration(subscriberRegistry, servicesHandlerFactory))
+                .Handlers(new Paramore.Brighter.HandlerConfiguration(subscriberRegistry, servicesHandlerFactory))
                 .Policies(policyRegistry)
                 .TaskQueues(messagingConfiguration)
-                .RequestContextFactory(new InMemoryRequestContextFactory())
+                .RequestContextFactory(new Paramore.Brighter.InMemoryRequestContextFactory())
                 .Build();
 
             _container.RegisterSingleton<IAmACommandProcessor>(commandProcessor);

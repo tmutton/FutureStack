@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Data.Sqlite;
-using paramore.brighter.commandprocessor.messagestore.sqlite;
+using Paramore.Brighter.MessageStore.Sqlite;
+
 
 namespace CreateMessageDatabase
 {

@@ -16,10 +16,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="paramore.brighter.commandprocessor" Version="7.0.65-beta" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="1.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="1.1.1" />
     <PackageReference Include="Darker" Version="0.6.0" />
+    <PackageReference Include="Paramore.Brighter" Version="7.1.5" />
     <PackageReference Include="SimpleInjector" Version="3.3.2" />
   </ItemGroup>
 

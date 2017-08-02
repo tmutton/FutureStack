@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using paramore.brighter.commandprocessor;
-using paramore.brighter.commandprocessor.messaginggateway.rmq;
-using paramore.brighter.commandprocessor.messaginggateway.rmq.MessagingGatewayConfiguration;
-using paramore.brighter.serviceactivator;
+using Paramore.Brighter;
+using Paramore.Brighter.MessagingGateway.RMQ;
+using Paramore.Brighter.MessagingGateway.RMQ.MessagingGatewayConfiguration;
+using Paramore.Brighter.ServiceActivator;
 using Polly;
 using Serilog;
 using SimpleInjector;
@@ -56,12 +56,10 @@ namespace ToDoApp
             // Channels (Message Routing)
             var connections = new List<Connection>
             {
-                new Connection(
+                new Connection<BulkAddToDoCommand>(
                     new ConnectionName("future.stack.todo"),
-                    new InputChannelFactory(rmqMessageConsumerFactory, rmqMessageProducerFactory),
-                    typeof(BulkAddToDoCommand),
                     new ChannelName("bulkaddtodo.command"),
-                    "bulkaddtodo.command",
+                    new RoutingKey("bulkaddtodo.command"),
                     timeoutInMilliseconds: 200,
                     isAsync: true)
             };
@@ -122,7 +120,7 @@ namespace ToDoApp
                     .Build()
                 )
                 .MessageMappers(messageMapperRegistry)
-                .ChannelFactory(new InputChannelFactory(rmqMessageConsumerFactory, rmqMessageProducerFactory))
+                .DefaultChannelFactory(new InputChannelFactory(rmqMessageConsumerFactory, rmqMessageProducerFactory))
                 .Connections(connections);
 
             var dispatcher = builder.Build();

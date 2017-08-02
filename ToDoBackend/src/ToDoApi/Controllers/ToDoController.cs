@@ -2,7 +2,7 @@
 using Darker;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using paramore.brighter.commandprocessor;
+using Paramore.Brighter;
 using ToDoCore.Adaptors.Db;
 using ToDoCore.Ports.Commands;
 using ToDoCore.Ports.Queries;

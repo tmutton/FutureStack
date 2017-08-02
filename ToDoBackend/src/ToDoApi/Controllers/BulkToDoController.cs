@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using paramore.brighter.commandprocessor;
+using Paramore.Brighter;
 using ToDoCore.Ports.Commands;
 using ToDoCore.ViewModels;
 

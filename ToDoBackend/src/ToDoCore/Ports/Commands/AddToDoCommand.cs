@@ -1,6 +1,6 @@
 ﻿
 using System;
-using  paramore.brighter.commandprocessor;
+using  Paramore.Brighter;
 
 namespace ToDoCore.Ports.Commands
 {

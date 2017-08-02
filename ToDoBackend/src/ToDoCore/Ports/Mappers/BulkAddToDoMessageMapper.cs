@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using paramore.brighter.commandprocessor;
+using Paramore.Brighter;
 using ToDoCore.Ports.Commands;
 
 namespace ToDoCore.Ports.Mappers

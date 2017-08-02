@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp1.1</TargetFramework>
@@ -37,10 +37,10 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="1.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="1.1.1" />
+    <PackageReference Include="Paramore.Brighter" Version="7.1.5" />
+    <PackageReference Include="Paramore.Brighter.MessageStore.Sqlite" Version="7.1.5" />
+    <PackageReference Include="Paramore.Brighter.MessagingGateway.RMQ" Version="7.1.5" />
     <PackageReference Include="SimpleInjector.Integration.AspNetCore.Mvc" Version="3.3.0" />
-    <PackageReference Include="paramore.brighter.commandprocessor" Version="7.0.65-beta" />
-    <PackageReference Include="paramore.brighter.commandprocessor.messagestore.sqlite" Version="7.0.65-beta" />
-    <PackageReference Include="paramore.brighter.commandprocessor.messaginggateway.rmq" Version="7.0.65-beta" />
   </ItemGroup>
 
 </Project>

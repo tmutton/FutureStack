@@ -3,6 +3,7 @@ using Darker;
 using Darker.Builder;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
@@ -18,8 +19,8 @@ using Paramore.Brighter.MessagingGateway.RMQ;
 using Paramore.Brighter.MessagingGateway.RMQ.MessagingGatewayConfiguration;
 using Polly;
 using SimpleInjector;
-using SimpleInjector.Integration.AspNetCore;
 using SimpleInjector.Integration.AspNetCore.Mvc;
+using SimpleInjector.Lifestyles;
 using ToDoCore.Adaptors;
 using ToDoCore.Adaptors.BrighterFactories;
 using ToDoCore.Adaptors.Db;
@@ -39,7 +40,7 @@ namespace ToDoApi
         {
             //use a sensible constructor resolution approach
             _container = new Container();
-            _container.Options.ConstructorResolutionBehavior = new MostResolvableConstructorBehavior(_container);
+            _container.Options.ConstructorResolutionBehavior = new MostResolvableParametersConstructorResolutionBehavior(_container);
 
             BuildConfiguration(env);
         }
@@ -81,17 +82,28 @@ namespace ToDoApi
             services.Configure<MvcOptions>(options => {
                 options.Filters.Add(new CorsAuthorizationFilterFactory("AllowAll"));
             });
+            
+            IntegrateSimpleInjector(services);
+        }
 
-            services.AddSingleton<IControllerActivator>(new SimpleInjectorControllerActivator(_container));
-            services.AddSingleton<IViewComponentActivator>(new SimpleInjectorViewComponentActivator(_container));
+        private void IntegrateSimpleInjector(IServiceCollection services)
+        {
+            _container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
+
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+            services.AddSingleton<IControllerActivator>(
+                new SimpleInjectorControllerActivator(_container));
+            services.AddSingleton<IViewComponentActivator>(
+                new SimpleInjectorViewComponentActivator(_container));
+
+            services.EnableSimpleInjectorCrossWiring(_container);
+            services.UseSimpleInjectorAspNetRequestScoping(_container);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IApplicationLifetime appLifetime)
         {
-            app.UseSimpleInjectorAspNetRequestScoping(_container);
-            _container.Options.DefaultScopedLifestyle = new AspNetRequestLifestyle();
-
             InitializeContainer(app);
             _container.Verify();
 
@@ -105,10 +117,6 @@ namespace ToDoApi
 
             app.UseCors("AllowAll");
 
-            app.UseApplicationInsightsRequestTelemetry();
-
-            app.UseApplicationInsightsExceptionTelemetry();
-
             app.UseMvc();
 
             EnsureDatabaseCreated();
@@ -121,12 +129,11 @@ namespace ToDoApi
             _container.RegisterMvcViewComponents(app);
 
             RegisterCommandProcessor();
-
             RegisterQueryProcessor();
 
             // Cross-wire ASP.NET services (if any). For instance:
-            _container.RegisterSingleton(app.ApplicationServices.GetService<ILoggerFactory>());
-            _container.RegisterSingleton(app.ApplicationServices.GetService<DbContextOptions<ToDoContext>>());
+            _container.CrossWire<ILoggerFactory>(app);
+            _container.CrossWire<DbContextOptions<ToDoContext>>(app);
             // NOTE: Prevent cross-wired instances as much as possible.
             // See: https://simpleinjector.org/blog/2016/07/
         }

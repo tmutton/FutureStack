@@ -29,7 +29,7 @@ namespace ToDoApp
                 .CreateLogger();
 
             var container = new Container();
-            container.Options.ConstructorResolutionBehavior = new MostResolvableConstructorBehavior(container);
+            container.Options.ConstructorResolutionBehavior = new MostResolvableParametersConstructorResolutionBehavior(container);
 
             var builder = new ConfigurationBuilder()
                 .AddEnvironmentVariables();

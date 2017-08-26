@@ -1,5 +1,5 @@
 from flask import Blueprint
 
-api = Blueprint('api', __name__)
+calendar_api = Blueprint('calendar_api', __name__)
 
 from . import calendar

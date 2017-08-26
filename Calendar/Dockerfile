@@ -1,3 +1,9 @@
-FROM tiangolo/uwsgi-nginx-flask:python3.6
+FROM python:3.6
+ENV PYTHONUNBUFFERED 1
+RUN mkdir /code
+ADD . /code
+WORKDIR /code
+RUN pip install -r requirements.txt
 
-COPY ./app /app
+
+

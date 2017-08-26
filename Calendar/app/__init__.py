@@ -18,17 +18,15 @@ def create_app(config_name):
 
     app = Flask(__name__)
 
-    from .api import api as api_blueprint
+    from .api import calendar_api as api_blueprint
     app.register_blueprint(api_blueprint)
-
-    for code in default_exceptions.keys():
-        app.error_handler_spec[None][code] = use_json_errors
 
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
 
     db.init_app(app)
 
-    # attach routes and custom error pages here
+    for code in default_exceptions.keys():
+        app.error_handler_spec[None][code] = use_json_errors
 
     return app

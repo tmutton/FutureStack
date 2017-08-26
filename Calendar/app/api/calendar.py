@@ -1,7 +1,7 @@
-from . import api
+from . import calendar_api
 
 
-@api.route('/calendar', methods=['GET', 'POST'])
+@calendar_api.route('/calendar', methods=['GET', 'POST'])
 def index():
     return '<h1>Hello World!</h1>'
 

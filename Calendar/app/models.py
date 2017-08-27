@@ -1,7 +1,8 @@
+import datetime
 from sqlalchemy.dialects.postgresql.base import UUID
 from uuid import uuid4
 
-from icalendar import Todo
+from icalendar import Calendar, Todo
 
 from app import db
 db.UUID = UUID
@@ -22,6 +23,14 @@ class ToDoItem(db.Model):
 
     def __repr__(self):
         return '<Summary %r Status %r>' % (self.summary, self.status)
+
+
+def make_calendar() -> Calendar:
+    calendar = Calendar()
+    calendar.add('prodid', '-//Todo list calendar//ldnug.org.uk')
+    calendar.add('version', '2.0')
+    calendar.add('dtstart', datetime.datetime.utcnow())
+    return calendar
 
 
 def make_todo(item: ToDoItem) -> Todo:

@@ -1,6 +1,6 @@
 ﻿using System;
-using Microsoft.Data.Sqlite;
-using Paramore.Brighter.MessageStore.Sqlite;
+using MySql.Data.MySqlClient;
+using Paramore.Brighter.MessageStore.MySql;
 
 
 namespace CreateMessageDatabase
@@ -16,15 +16,15 @@ namespace CreateMessageDatabase
             Console.WriteLine("Done");
         }
 
-        private static SqliteConnection SetupMessageDb(string connectionStringPath)
+        private static MySqlConnection SetupMessageDb(string connectionStringPath)
         {
             var connectionString = "DataSource=\"" + connectionStringPath + "\"";
-            return CreateDatabaseWithTable(connectionString, SqliteMessageStoreBuilder.GetDDL(TableNameMessages));
+            return CreateDatabaseWithTable(connectionString, MySqlMessageStoreBuilder.GetDDL(TableNameMessages));
         }
 
-        private static SqliteConnection CreateDatabaseWithTable(string dataSourceTestDb, string createTableScript)
+        private static MySqlConnection CreateDatabaseWithTable(string dataSourceTestDb, string createTableScript)
         {
-            var sqlConnection = new SqliteConnection(dataSourceTestDb);
+            var sqlConnection = new MySqlConnection(dataSourceTestDb);
 
             sqlConnection.Open();
             using (var command = sqlConnection.CreateCommand())

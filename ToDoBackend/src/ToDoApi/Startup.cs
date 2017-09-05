@@ -13,8 +13,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using MySQL.Data.EntityFrameworkCore.Extensions;
 using Paramore.Brighter;
-using Paramore.Brighter.MessageStore.Sqlite;
+using Paramore.Brighter.MessageStore.MySql;
 using Paramore.Brighter.MessagingGateway.RMQ;
 using Paramore.Brighter.MessagingGateway.RMQ.MessagingGatewayConfiguration;
 using Polly;
@@ -69,8 +70,6 @@ namespace ToDoApi
             // Add framework services.
             services.AddApplicationInsightsTelemetry(Configuration);
 
-            services.AddDbContext<ToDoContext>(options => options.UseSqlite("Data Source=" + Configuration["Database:ToDo"]));
-
             services.AddMvc();
 
             services.AddCors(options =>
@@ -99,6 +98,8 @@ namespace ToDoApi
 
             services.EnableSimpleInjectorCrossWiring(_container);
             services.UseSimpleInjectorAspNetRequestScoping(_container);
+
+   
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
@@ -124,6 +125,7 @@ namespace ToDoApi
 
         private void InitializeContainer(IApplicationBuilder app)
         {
+            _container.Register<DbContextOptions<ToDoContext>>( () => new DbContextOptionsBuilder<ToDoContext>().UseMySQL(Configuration["Database:ToDo"]).Options, Lifestyle.Singleton);
             // Add application presentation components:
             _container.RegisterMvcControllers(app);
             _container.RegisterMvcViewComponents(app);
@@ -133,9 +135,10 @@ namespace ToDoApi
 
             // Cross-wire ASP.NET services (if any). For instance:
             _container.CrossWire<ILoggerFactory>(app);
-            _container.CrossWire<DbContextOptions<ToDoContext>>(app);
             // NOTE: Prevent cross-wired instances as much as possible.
             // See: https://simpleinjector.org/blog/2016/07/
+
+            
         }
 
         private void RegisterQueryProcessor()
@@ -195,8 +198,8 @@ namespace ToDoApi
             var messagingGatewayConfiguration = RmqGatewayBuilder.With.Uri(new Uri(Configuration["RabbitMQ:Uri"])).Exchange(Configuration["RabbitMQ:Exchange"]).DefaultQueues();
 
             var gateway = new RmqMessageProducer(messagingGatewayConfiguration);
-            var sqlMessageStore = new SqliteMessageStore(
-                new SqliteMessageStoreConfiguration(
+            var sqlMessageStore = new MySqlMessageStore(
+                new MySqlMessageStoreConfiguration(
                     "Data Source=" + Configuration["Database:MessageStore"], Configuration["Database:MessageTableName"])
             );
 

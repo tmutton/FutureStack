@@ -23,4 +23,10 @@
     <PackageReference Include="SimpleInjector" Version="4.0.8" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="MySql.Data.EntityFrameworkCore">
+      <HintPath>C:\Users\toby.henderson\.nuget\packages\mysql.data.entityframeworkcore\8.0.8-dmr\lib\netstandard1.6\MySql.Data.EntityFrameworkCore.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

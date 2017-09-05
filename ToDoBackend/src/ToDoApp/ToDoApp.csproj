@@ -21,11 +21,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="1.1.2" />
+    <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="8.0.8-dmr" />
     <PackageReference Include="Paramore.Brighter" Version="7.1.5" />
     <PackageReference Include="Paramore.Brighter.MessagingGateway.RMQ" Version="7.1.5" />
     <PackageReference Include="paramore.brighter.serviceactivator" Version="7.1.5" />

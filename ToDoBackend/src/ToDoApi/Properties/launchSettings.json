@@ -3,7 +3,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:5000/",
+      "applicationUrl": "http://localhost:5000/api/todo",
       "sslPort": 0
     }
   },
@@ -14,11 +14,10 @@
       "environmentVariables": {
         "RabbitMQ:Uri": "amqp://guest:guest@localhost:5672/%2f",
         "Database:MessageTableName": "Messages",
-        "KDatabase:MessageStoreey": "Database:MessageStore",
         "RabbitMQ:Exchange": "RabbitMQ:Exchange",
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "Database:ToDo": "ToDoDb.sqlite",
-        "Database:MessageStore": "messages.sqlite"
+        "Database:ToDo": "Server=localhost;Uid=root;Pwd=root;Database=ToDoBackend",
+        "Database:MessageStore": "Server=localhost;Uid=root;Pwd=root;Database=ToDoBackend"
       }
     },
     "ToDoApi": {

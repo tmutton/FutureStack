@@ -1,9 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Darker;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Paramore.Brighter;
-using ToDoCore.Adaptors.Db;
 using ToDoCore.Ports.Commands;
 using ToDoCore.Ports.Queries;
 using ToDoCore.ViewModels;
@@ -13,16 +11,13 @@ namespace ToDoApi.Controllers
     [Route("api/[controller]")]
     public class ToDoController : Controller
     {
-        private readonly DbContextOptions<ToDoContext> _dbContextOptions;
         private readonly IAmACommandProcessor _commandProcessor;
         private readonly IQueryProcessor _queryProcessor;
 
         public ToDoController(
-            DbContextOptions<ToDoContext> dbContextOptions,
             IAmACommandProcessor commandProcessor,
             IQueryProcessor queryProcessor)
         {
-            _dbContextOptions = dbContextOptions;
             _commandProcessor = commandProcessor;
             _queryProcessor = queryProcessor;
         }

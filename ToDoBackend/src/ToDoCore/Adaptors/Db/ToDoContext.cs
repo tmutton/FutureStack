@@ -17,6 +17,9 @@ namespace ToDoCore.Adaptors.Db
             {
                 optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=EFProviders.InMemory;Trusted_Connection=True;");
             }
+
+            // Fixes issue with MySql connector reporting nested transactions not supported https://github.com/aspnet/EntityFrameworkCore/issues/7017
+            Database.AutoTransactionsEnabled = false;
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

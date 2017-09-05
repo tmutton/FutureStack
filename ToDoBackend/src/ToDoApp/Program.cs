@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using MySQL.Data.EntityFrameworkCore.Extensions;
 using Paramore.Brighter;
 using Paramore.Brighter.MessagingGateway.RMQ;
 using Paramore.Brighter.MessagingGateway.RMQ.MessagingGatewayConfiguration;
@@ -38,7 +39,7 @@ namespace ToDoApp
 
             //Database - this won't work, as its not the same Db as the web site, we should switch to Sql Server here
             var options = new DbContextOptionsBuilder<ToDoContext>()
-                .UseSqlite("Data Source=" + Configuration["Database:ToDo"])
+                .UseMySQL(Configuration["Database:ToDo"])
                 .Options;
 
             container.Register(() => options);

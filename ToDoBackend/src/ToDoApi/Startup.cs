@@ -13,7 +13,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using MySQL.Data.EntityFrameworkCore.Extensions;
 using Paramore.Brighter;
 using Paramore.Brighter.MessageStore.MySql;
 using Paramore.Brighter.MessagingGateway.RMQ;
@@ -125,7 +124,7 @@ namespace ToDoApi
 
         private void InitializeContainer(IApplicationBuilder app)
         {
-            _container.Register<DbContextOptions<ToDoContext>>( () => new DbContextOptionsBuilder<ToDoContext>().UseMySQL(Configuration["Database:ToDo"]).Options, Lifestyle.Singleton);
+            _container.Register<DbContextOptions<ToDoContext>>( () => new DbContextOptionsBuilder<ToDoContext>().UseMySql(Configuration["Database:ToDo"]).Options, Lifestyle.Singleton);
             // Add application presentation components:
             _container.RegisterMvcControllers(app);
             _container.RegisterMvcViewComponents(app);

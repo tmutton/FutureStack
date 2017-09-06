@@ -2,22 +2,27 @@ version: '2'
 services:
   web:
     build: ./ToDoBackend/src/ToDoApi
+    hostname: todoweb
     ports:
       - "5000:5000"
     environment:
-      - RabbitMQ__Uri=amqp://guest:guest@todo_broker:5672/%2f
+      - RabbitMQ__Uri=amqp://guest:guest@doc:5672/%2f
       - RabbitMQ__Exchange=future.stack.exchange
-      - Database__ToDo=ToDoDb.sqlite
-      - Database__MessageStore=messages.sqlite
+      - Database__ToDo=Server=todo_db;Uid=root;Pwd=root;Database=ToDoBackend
+      - Database__MessageStore=Server=todo_db;Uid=root;Pwd=root;Database=ToDoBackend
       - Database__MessageTableName=Messages
     links:
       - rabbit:todo_broker
+      - mysql:todo_db
     depends_on:
       - rabbit
+      - mysql
   reverse_proxy:
     image: nginx
     ports:
       - "8080:80"
+    links:
+      - web:todoweb
     depends_on:
       - web
     volumes:
@@ -27,11 +32,21 @@ services:
     environment:
       - RabbitMQ__Uri=amqp://guest:guest@todo_broker:5672/%2f
       - RabbitMQ__Exchange=future.stack.exchange
-      - Database__ToDo=ToDoDb.sqlite
+      - Database__ToDo=Server=todo_db;Uid=root;Pwd=root;Database=ToDoBackend
     links:
       - rabbit:todo_broker
+      - mysql:todo_db
     depends_on:
       - rabbit
+      - mysql
   rabbit:
     hostname: todo_broker
     image: rabbitmq:3-management
+  
+  mysql:
+    hostname: todo_db
+    image: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"

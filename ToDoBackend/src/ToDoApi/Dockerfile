@@ -1,4 +1,4 @@
-FROM microsoft/aspnetcore
+FROM microsoft/aspnetcore:2.0
 
 # create a directory for the app source code 
 RUN mkdir -p /usr/todo

@@ -1,0 +1,18 @@
+GET https://api.gitter.im/v1/user/me
+Authorization: Bearer c1e4133069c4f671911de7d195c165f53be0bb93
+Accept: application/json
+
+
+
+GET https://api.gitter.im/v1/rooms
+Authorization: Bearer c1e4133069c4f671911de7d195c165f53be0bb93
+Accept: application/json
+
+
+
+POST https://api.gitter.im/v1/rooms/55252fbf15522ed4b3deafdb/chatMessages
+Authorization: Bearer c1e4133069c4f671911de7d195c165f53be0bb93
+Accept: application/json
+Content-Type: application/json
+
+{"text":"Testing posting message"}

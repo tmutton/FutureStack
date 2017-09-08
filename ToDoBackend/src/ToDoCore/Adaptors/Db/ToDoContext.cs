@@ -19,7 +19,9 @@ namespace ToDoCore.Adaptors.Db
             }
 
             // Fixes issue with MySql connector reporting nested transactions not supported https://github.com/aspnet/EntityFrameworkCore/issues/7017
-            Database.AutoTransactionsEnabled = false;
+            //Database.AutoTransactionsEnabled = false;
+
+            base.OnConfiguring(optionsBuilder);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

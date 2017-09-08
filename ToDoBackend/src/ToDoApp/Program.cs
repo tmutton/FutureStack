@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using MySql.Data.MySqlClient;
 using Paramore.Brighter;
 using Paramore.Brighter.MessagingGateway.RMQ;
 using Paramore.Brighter.MessagingGateway.RMQ.MessagingGatewayConfiguration;
@@ -129,11 +130,23 @@ namespace ToDoApp
 
         private static void EnsureDatabaseCreated(Container container)
         {
-            var contextOptions = container.GetInstance<DbContextOptions<ToDoContext>>();
-            using (var context = new ToDoContext(contextOptions))
+            
+
+            var policy = Policy.Handle<MySqlException>().WaitAndRetryForever(
+                retryAttempt => TimeSpan.FromSeconds(2),
+                (exception, timespan) =>
+                {
+                    Console.WriteLine($"Waiting for the database to come online - {exception.Message}");
+                });
+
+            policy.Execute(() =>
             {
-                context.Database.EnsureCreated();
-            }
+                var contextOptions = container.GetInstance<DbContextOptions<ToDoContext>>();
+                using (var context = new ToDoContext(contextOptions))
+                {
+                    context.Database.EnsureCreated();
+                }
+            });
         }
-     }
+    }
 }

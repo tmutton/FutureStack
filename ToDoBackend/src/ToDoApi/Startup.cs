@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using MySql.Data.MySqlClient;
 using Paramore.Brighter;
 using Paramore.Brighter.MessageStore.MySql;
 using Paramore.Brighter.MessagingGateway.RMQ;
@@ -120,6 +121,8 @@ namespace ToDoApi
             app.UseMvc();
 
             EnsureDatabaseCreated();
+
+            CreateMessageTable(Configuration["Database:MessageStore"], Configuration["Database:MessageTableName"]);
         }
 
         private void InitializeContainer(IApplicationBuilder app)
@@ -197,12 +200,11 @@ namespace ToDoApi
             var messagingGatewayConfiguration = RmqGatewayBuilder.With.Uri(new Uri(Configuration["RabbitMQ:Uri"])).Exchange(Configuration["RabbitMQ:Exchange"]).DefaultQueues();
 
             var gateway = new RmqMessageProducer(messagingGatewayConfiguration);
-            var sqlMessageStore = new MySqlMessageStore(
-                new MySqlMessageStoreConfiguration(
-                    "Data Source=" + Configuration["Database:MessageStore"], Configuration["Database:MessageTableName"])
-            );
+            var sqlMessageStore = new MySqlMessageStore(new MySqlMessageStoreConfiguration(Configuration["Database:MessageStore"], Configuration["Database:MessageTableName"]));
 
-            var messageMapperFactory = new MessageMapperFactory(_container);
+           
+
+             var messageMapperFactory = new MessageMapperFactory(_container);
             _container.Register<IAmAMessageMapper<BulkAddToDoCommand>, BulkAddToDoMessageMapper>();
 
             var messageMapperRegistry = new MessageMapperRegistry(messageMapperFactory)
@@ -232,6 +234,21 @@ namespace ToDoApi
             {
                 context.Database.EnsureCreated();
             }
+        }
+
+
+        private static MySqlConnection CreateMessageTable(string dataSourceTestDb, string tableNameMessages)
+        {
+            var sqlConnection = new MySqlConnection(dataSourceTestDb);
+
+            sqlConnection.Open();
+            using (var command = sqlConnection.CreateCommand())
+            {
+                command.CommandText = MySqlMessageStoreBuilder.GetDDL(tableNameMessages);
+                command.ExecuteNonQuery();
+            }
+
+            return sqlConnection;
         }
     }
 }

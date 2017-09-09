@@ -40,9 +40,15 @@ services:
       - rabbit
       - mysql
   rabbit:
-    hostname: todo_broker
     image: rabbitmq:3-management
-  
+    hostname: todo_broker
+    environment:
+      RABBITMQ_ERLANG_COOKIE: "SWQOKODSQALRPCLNMEQG"
+      RABBITMQ_DEFAULT_USER: "guest"
+      RABBITMQ_DEFAULT_PASS: "guest"
+      RABBITMQ_DEFAULT_VHOST: "/"
+    ports:
+      - "15672:15672"
   mysql:
     hostname: todo_db
     image: mysql

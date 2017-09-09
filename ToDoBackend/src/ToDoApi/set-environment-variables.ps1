@@ -1,4 +1,4 @@
-$env:RabbitMQ:Uri = "amqp://guest:guest@localhost:5672/%2f"
+$env:RabbitMQ:Uri = "amqp://guest:guest@localhost:5672"
 $env:RabbitMQ:Exchange= "future.stack.exchange"
 $env:Database:ToDo = "Server=localhost;Uid=root;Pwd=root;Database=ToDoBackend"
 $env:Database:MessageStore= "Server=localhost;Uid=root;Pwd=root;Database=ToDoBackend"

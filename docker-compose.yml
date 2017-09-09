@@ -6,7 +6,7 @@ services:
     ports:
       - "5000:5000"
     environment:
-      - RabbitMQ__Uri=amqp://guest:guest@doc:5672/%2f
+      - RabbitMQ__Uri=amqp://guest:guest@todo_broker:5672
       - RabbitMQ__Exchange=future.stack.exchange
       - Database__ToDo=Server=todo_db;Uid=root;Pwd=root;Database=ToDoBackend
       - Database__MessageStore=Server=todo_db;Uid=root;Pwd=root;Database=ToDoBackend
@@ -30,7 +30,7 @@ services:
   worker:
     build: ./ToDoBackend/src/ToDoApp
     environment:
-      - RabbitMQ__Uri=amqp://guest:guest@todo_broker:5672/%2f
+      - RabbitMQ__Uri=amqp://guest:guest@todo_broker:5672
       - RabbitMQ__Exchange=future.stack.exchange
       - Database__ToDo=Server=todo_db;Uid=root;Pwd=root;Database=ToDoBackend
     links:

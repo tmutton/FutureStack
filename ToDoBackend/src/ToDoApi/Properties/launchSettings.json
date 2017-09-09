@@ -12,7 +12,7 @@
       "commandName": "IISExpress",
       "launchBrowser": true,
       "environmentVariables": {
-        "RabbitMQ:Uri": "amqp://guest:guest@localhost:5672/%2f",
+        "RabbitMQ:Uri": "amqp://guest:guest@localhost:5672",
         "Database:MessageTableName": "Messages",
         "RabbitMQ:Exchange": "RabbitMQ:Exchange",
         "ASPNETCORE_ENVIRONMENT": "Development",

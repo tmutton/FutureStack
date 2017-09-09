@@ -237,18 +237,25 @@ namespace ToDoApi
         }
 
 
-        private static MySqlConnection CreateMessageTable(string dataSourceTestDb, string tableNameMessages)
+        private static void CreateMessageTable(string dataSourceTestDb, string tableNameMessages)
         {
-            var sqlConnection = new MySqlConnection(dataSourceTestDb);
-
-            sqlConnection.Open();
-            using (var command = sqlConnection.CreateCommand())
+            try
             {
-                command.CommandText = MySqlMessageStoreBuilder.GetDDL(tableNameMessages);
-                command.ExecuteNonQuery();
+                using (var sqlConnection = new MySqlConnection(dataSourceTestDb))
+                {
+                    sqlConnection.Open();
+                    using (var command = sqlConnection.CreateCommand())
+                    {
+                        command.CommandText = MySqlMessageStoreBuilder.GetDDL(tableNameMessages);
+                        command.ExecuteScalar();
+                    }
+                }
+                
             }
-
-            return sqlConnection;
+            catch (System.Exception e)
+            {
+                Console.WriteLine($"Issue with creating MessageStore table, {e.Message}");
+            }
         }
     }
 }

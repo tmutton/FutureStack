@@ -34,9 +34,10 @@ namespace ToDoTests.Core.Ports.Handlers
                 context.SaveChanges();
             }
 
+            var fakeCommandProcessor = new FakeCommandProcessor();
 
             var command = new UpdateToDoCommand(toDoItem.Id, title: TODO_TITLE);
-            var handler = new UpdateToDoCommandHandlerAsync(options);
+            var handler = new UpdateToDoCommandHandlerAsync(options, fakeCommandProcessor);
 
             await handler.HandleAsync(command);
 
@@ -46,6 +47,9 @@ namespace ToDoTests.Core.Ports.Handlers
                 Assert.AreEqual(TODO_TITLE, context.ToDoItems.Single().Title);
                 Assert.AreEqual(false, context.ToDoItems.Single().Completed);
             }
+
+            // Should not send task complete event
+            Assert.IsFalse(fakeCommandProcessor.SentCompletedEvent);
         }
 
         [Test]
@@ -63,6 +67,8 @@ namespace ToDoTests.Core.Ports.Handlers
                 .UseInMemoryDatabase(databaseName: "completed_writes_to_database")
                 .Options;
 
+            var fakeCommandProcessor = new FakeCommandProcessor();
+
             var toDoItem = new ToDoItem() { Title = "This title won't be changed" };
             using (var context = new ToDoContext(options))
             {
@@ -70,9 +76,8 @@ namespace ToDoTests.Core.Ports.Handlers
                 context.SaveChanges();
             }
 
-
             var command = new UpdateToDoCommand(toDoItem.Id, complete: true);
-            var handler = new UpdateToDoCommandHandlerAsync(options);
+            var handler = new UpdateToDoCommandHandlerAsync(options, fakeCommandProcessor);
 
             await handler.HandleAsync(command);
 
@@ -82,6 +87,9 @@ namespace ToDoTests.Core.Ports.Handlers
                 Assert.AreEqual(toDoItem.Title, context.ToDoItems.Single().Title);
                 Assert.AreEqual(true, context.ToDoItems.Single().Completed);
             }
+
+            // Has sent task complete event
+            Assert.IsTrue(fakeCommandProcessor.SentCompletedEvent);
         }
 
         [Test]
@@ -101,6 +109,8 @@ namespace ToDoTests.Core.Ports.Handlers
                 .UseInMemoryDatabase(databaseName: "titlecompleted_writes_to_database")
                 .Options;
 
+            var fakeCommandProcessor = new FakeCommandProcessor();
+
             var toDoItem = new ToDoItem() { Title = "This title will be changed" };
             using (var context = new ToDoContext(options))
             {
@@ -110,7 +120,7 @@ namespace ToDoTests.Core.Ports.Handlers
 
 
             var command = new UpdateToDoCommand(toDoItem.Id, title: TODO_TITLE, complete: true);
-            var handler = new UpdateToDoCommandHandlerAsync(options);
+            var handler = new UpdateToDoCommandHandlerAsync(options, fakeCommandProcessor);
 
             await handler.HandleAsync(command);
 
@@ -120,6 +130,9 @@ namespace ToDoTests.Core.Ports.Handlers
                 Assert.AreEqual(TODO_TITLE, context.ToDoItems.Single().Title);
                 Assert.AreEqual(true, context.ToDoItems.Single().Completed);
             }
+
+            // Has sent task complete event
+            Assert.IsTrue(fakeCommandProcessor.SentCompletedEvent);
         }
 
         [Test]
@@ -137,6 +150,8 @@ namespace ToDoTests.Core.Ports.Handlers
             var options = new DbContextOptionsBuilder<ToDoContext>()
                 .UseInMemoryDatabase(databaseName: "order_writes_to_database")
                 .Options;
+            
+            var fakeCommandProcessor = new FakeCommandProcessor();
 
             var toDoItem = new ToDoItem() { Title = "This title won't be changed", Completed = true, Order = 10};
             using (var context = new ToDoContext(options))
@@ -147,7 +162,7 @@ namespace ToDoTests.Core.Ports.Handlers
 
 
             var command = new UpdateToDoCommand(toDoItem.Id, order: NEW_ORDER);
-            var handler = new UpdateToDoCommandHandlerAsync(options);
+            var handler = new UpdateToDoCommandHandlerAsync(options, fakeCommandProcessor);
 
             await handler.HandleAsync(command);
 
@@ -159,6 +174,8 @@ namespace ToDoTests.Core.Ports.Handlers
                 Assert.AreEqual(NEW_ORDER, context.ToDoItems.Single().Order);
             }
 
+            // Should not send task complete event
+            Assert.IsFalse(fakeCommandProcessor.SentCompletedEvent);
         }
 
         [Test]
@@ -179,6 +196,8 @@ namespace ToDoTests.Core.Ports.Handlers
                 .UseInMemoryDatabase(databaseName: "order_title_completed_writes_to_database")
                 .Options;
 
+            var fakeCommandProcessor = new FakeCommandProcessor();
+
             var toDoItem = new ToDoItem() { Title = "Title", Completed = true, Order = 10};
             using (var context = new ToDoContext(options))
             {
@@ -188,7 +207,7 @@ namespace ToDoTests.Core.Ports.Handlers
 
 
             var command = new UpdateToDoCommand(toDoItem.Id, title:NEW_TITLE, complete: NEW_COMPLETED, order: NEW_ORDER);
-            var handler = new UpdateToDoCommandHandlerAsync(options);
+            var handler = new UpdateToDoCommandHandlerAsync(options, fakeCommandProcessor);
 
             await handler.HandleAsync(command);
 
@@ -199,6 +218,8 @@ namespace ToDoTests.Core.Ports.Handlers
                 Assert.AreEqual(NEW_COMPLETED, context.ToDoItems.Single().Completed);
                 Assert.AreEqual(NEW_ORDER, context.ToDoItems.Single().Order);
             }
+            // Should not send task complete event
+            Assert.IsFalse(fakeCommandProcessor.SentCompletedEvent);
         }
     }
 }

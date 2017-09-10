@@ -26,6 +26,7 @@ using ToDoCore.Adaptors;
 using ToDoCore.Adaptors.BrighterFactories;
 using ToDoCore.Adaptors.Db;
 using ToDoCore.Ports.Commands;
+using ToDoCore.Ports.Events;
 using ToDoCore.Ports.Handlers;
 using ToDoCore.Ports.Mappers;
 using ToDoCore.Ports.Queries;
@@ -202,14 +203,14 @@ namespace ToDoApi
             var gateway = new RmqMessageProducer(messagingGatewayConfiguration);
             var sqlMessageStore = new MySqlMessageStore(new MySqlMessageStoreConfiguration(Configuration["Database:MessageStore"], Configuration["Database:MessageTableName"]));
 
-           
-
              var messageMapperFactory = new MessageMapperFactory(_container);
             _container.Register<IAmAMessageMapper<BulkAddToDoCommand>, BulkAddToDoMessageMapper>();
+            _container.Register<IAmAMessageMapper<TaskCompletedEvent>, TaskCompleteEventMessageMapper>();
 
             var messageMapperRegistry = new MessageMapperRegistry(messageMapperFactory)
             {
-                {typeof(BulkAddToDoCommand), typeof(BulkAddToDoMessageMapper)}
+                {typeof(BulkAddToDoCommand), typeof(BulkAddToDoMessageMapper)},
+                {typeof(TaskCompletedEvent), typeof(TaskCompleteEventMessageMapper)}
             };
 
             var messagingConfiguration = new MessagingConfiguration(

@@ -5,7 +5,8 @@
       "environmentVariables": {
         "RabbitMQ:Uri": "amqp://guest:guest@localhost:5672",
         "RabbitMQ:Exchange": "future.stack.exchange",
-        "Database:ToDo": "Server=localhost;Uid=root;Pwd=root;Database=ToDoBackend"
+        "Database:ToDo": "Server=localhost;Uid=root;Pwd=root;Database=ToDoBackend",
+        "Database:ToDoDb": "Server=localhost;Uid=root;Pwd=root"
       }
     }
   }

@@ -121,6 +121,8 @@ namespace ToDoApi
 
             app.UseMvc();
 
+            CheckDbIsUp(Configuration["Database:ToDoDb"]);
+
             EnsureDatabaseCreated();
 
             CreateMessageTable(Configuration["Database:MessageStore"], Configuration["Database:MessageTableName"]);
@@ -228,6 +230,23 @@ namespace ToDoApi
             _container.RegisterSingleton<IAmACommandProcessor>(commandProcessor);
         }
 
+        private static void CheckDbIsUp(string connectionString)
+        {
+            var policy = Policy.Handle<MySqlException>().WaitAndRetryForever(
+                retryAttempt => TimeSpan.FromSeconds(2),
+                (exception, timespan) =>
+                {
+                    Console.WriteLine($"Healthcheck: Waiting for the database {connectionString} to come online - {exception.Message}");
+                });
+
+            policy.Execute(() =>
+            {
+                using (var conn = new MySqlConnection(connectionString))
+                {
+                    conn.Open();
+                }
+            });
+        }
         private void EnsureDatabaseCreated()
         {
             var contextOptions = _container.GetInstance<DbContextOptions<ToDoContext>>();

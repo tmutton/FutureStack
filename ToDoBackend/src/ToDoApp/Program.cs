@@ -67,6 +67,7 @@ namespace ToDoApp
 
             var dispatcher = CreateDispatcher(container, connections, rmqMessageConsumerFactory, rmqMessageProducerFactory);
 
+            CheckDbIsUp(Configuration["Database:ToDoDb"]);
             //Must call once all container registrations complete, as cannnot register post first get.
             EnsureDatabaseCreated(container);
 
@@ -76,6 +77,24 @@ namespace ToDoApp
             Console.ReadLine();
 
             dispatcher.End().Wait();
+        }
+
+        private static void CheckDbIsUp(string connectionString)
+        {
+            var policy = Policy.Handle<MySqlException>().WaitAndRetryForever(
+                retryAttempt => TimeSpan.FromSeconds(2),
+                (exception, timespan) =>
+                {
+                    Console.WriteLine($"Healthcheck: Waiting for the database {connectionString} to come online - {exception.Message}");
+                });
+
+            policy.Execute(() =>
+            {
+                using (var conn = new MySqlConnection(connectionString))
+                {
+                    conn.Open();
+                }
+            });
         }
 
         private static Dispatcher CreateDispatcher(
@@ -128,6 +147,7 @@ namespace ToDoApp
             return dispatcher;
         }
 
+
         private static void EnsureDatabaseCreated(Container container)
         {
             
@@ -136,7 +156,7 @@ namespace ToDoApp
                 retryAttempt => TimeSpan.FromSeconds(2),
                 (exception, timespan) =>
                 {
-                    Console.WriteLine($"Waiting for the database to come online - {exception.Message}");
+                    Console.WriteLine($"Can't EnsureCreated waiting for the database to come online - {exception.Message}");
                 });
 
             policy.Execute(() =>

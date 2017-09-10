@@ -8,10 +8,12 @@ from app.models import ToDoItem, make_calendar, make_todo
 
 
 class CalendarTests(unittest.TestCase):
-    def setUp(self):
-        pass
-
     def test_create_a_todo(self):
+        """
+            Given that I have a todo item
+            When I convert it into an ical todo component
+            Then I can see the todo in the ical component
+        """
         id = uuid4()
         item = ToDoItem(id, "A short summary", False)
 
@@ -23,6 +25,12 @@ class CalendarTests(unittest.TestCase):
         self.assertEqual(feed, expected_feed_bytes)
 
     def test_create_a_calendar_with_todos(self):
+        """
+            Given that I have todo items
+            When I convert it into an ical calendar
+            THen I have matching todo components in the ical calendar feed
+        """
+
         calendar = make_calendar()
 
         id = uuid4()
@@ -39,5 +47,3 @@ class CalendarTests(unittest.TestCase):
         self.assertEqual(cal_ics, expected_ics_bytes)
 
 
-    def tearDown(self):
-        pass

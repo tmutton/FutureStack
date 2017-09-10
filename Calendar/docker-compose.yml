@@ -1,15 +1,33 @@
-version: '3'
+version: '2.1'
 
 services:
-  db:
-    image: postgres
-  web:
-    build: .
-    command: python manage.py runserver -h 0.0.0.0 -p 8000
+  calendar-db:
+    container_name: calendar-db
+    build: ./db
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=docker
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: exit 0
+
+  calendar-web:
+    container_name: calendar-web
+    build: ./
+    command: ./EntryPoint.sh
     volumes:
       - .:/code
     ports:
-      - "8000:8000"
+      - "8000:8000" # expose ports HOST:CONTAINER
+    environment:
+      - FLASK_CONFIG=development
+      - DEV_DATABASE_URL=postgres://docker:password@calendar-db:5432/calendar_dev
+      - TEST_DATABASE_URL=postgres://docker:password@calendar-db:5432/calendar_test
     depends_on:
-      - db
+      calendar-db:
+         condition: service_healthy
+    links:
+      - calendar-db
+
 

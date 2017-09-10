@@ -12,14 +12,12 @@ class ToDoItem(db.Model):
     __tablename__ = 'todo'
     id = db.Column(db.UUID(as_uuid=True), primary_key=True, default=uuid4)
     completed = db.Column(db.Boolean())
-    order = db.Column(db.Integer())
     title = db.Column(db.String())
 
-    def __init__(self, id: uuid4, title: str = "", completed: bool = False, order: int = 0) -> None:
+    def __init__(self, id: uuid4, title: str = "", completed: bool = False) -> None:
         self.id = id
         self.title = title
         self.completed = completed
-        self.order = order
 
     def __repr__(self):
         return '<Summary %r Status %r>' % (self.summary, self.status)

@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "ToDoApp": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "RabbitMQ:Uri": "amqp://guest:guest@localhost:5672",
+        "RabbitMQ:Exchange": "future.stack.exchange"
+      }
+    }
+  }
+}

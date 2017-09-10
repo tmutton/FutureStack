@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Paramore.Brighter;
 
-namespace ToDoSlackerApp
+namespace ToDoGitterApp
 {
     internal class ServiceProviderMessageMapperFactory : IAmAMessageMapperFactory
     {

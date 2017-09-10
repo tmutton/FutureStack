@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Paramore.Brighter;
 using Paramore.Brighter.MessagingGateway.RMQ;
@@ -7,20 +8,29 @@ using Paramore.Brighter.ServiceActivator;
 using Polly;
 using Serilog;
 using Serilog.Events;
-using ToDoSlackerApp.Port;
+using ToDoGitterApp.Ports;
 
-namespace ToDoSlackerApp
+namespace ToDoGitterApp
 {
     class Program
     {
+        public static IConfigurationRoot Configuration { get; set;  }
+
+
         static void Main(string[] args)
         {
 
             Log.Logger = new LoggerConfiguration()
-                .WriteTo.Console(LogEventLevel.Information)
+                .WriteTo.Console(LogEventLevel.Debug)
                 .CreateLogger();
 
             var serviceCollection = new ServiceCollection();
+
+            var builder = new ConfigurationBuilder()
+                .AddEnvironmentVariables();
+
+           Configuration = builder.Build();
+
 
             MessageMapperRegistry messageMapperRegistry;
             HandlerConfiguration handlerConfiguration;
@@ -28,8 +38,8 @@ namespace ToDoSlackerApp
 
             var rmqConnnection = new RmqMessagingGatewayConnection
             {
-                AmpqUri = new AmqpUriSpecification(new Uri("amqp://guest:guest@localhost:5672/%2f")),
-                Exchange = new Exchange("paramore.brighter.exchange"),
+                AmpqUri = new AmqpUriSpecification(new Uri(Configuration["RabbitMQ:Uri"])),
+                Exchange = new Exchange(Configuration["RabbitMQ:Exchange"]),
             };
 
             var commandProcessor = CommandProcessorBuilder.With()
@@ -45,10 +55,10 @@ namespace ToDoSlackerApp
                 .DefaultChannelFactory(new InputChannelFactory(new RmqMessageConsumerFactory(rmqConnnection), new RmqMessageProducerFactory(rmqConnnection)))
                 .Connections(new Connection[]
                 {
-                    new Connection<TaskUpdateEvent>(
-                        new ConnectionName("TaskUpdateEvent"),
-                        new ChannelName("ToDo.Slacker.TaskUpdateEvent"),
-                        new RoutingKey("ToDo.TaskUpdateEvent"),
+                    new Connection<TaskCompletedEvent>(
+                        new ConnectionName("TaskCompletedEvent"),
+                        new ChannelName("taskcompleted.event"),
+                        new RoutingKey("taskcompleted.event"),
                         timeoutInMilliseconds: 200)
                 }).Build();
 
@@ -89,11 +99,11 @@ namespace ToDoSlackerApp
         private static ServiceProvider ServiceProvider(ServiceCollection serviceCollection,
             out MessageMapperRegistry messageMapperRegistry, out HandlerConfiguration handlerConfiguration)
         {
-            serviceCollection.AddTransient<IHandleRequests<TaskUpdateEvent>, TaskUpdateEventHandler>();
-            serviceCollection.AddTransient<IAmAMessageMapper<TaskUpdateEvent>, TaskUpdateEventMessageMapper>();
+            serviceCollection.AddTransient<IHandleRequests<TaskCompletedEvent>, TaskUpdateEventHandler>();
+            serviceCollection.AddTransient<IAmAMessageMapper<TaskCompletedEvent>, TaskCompleteEventMessageMapper>();
 
             var subscriberRegistry = new SubscriberRegistry();
-            subscriberRegistry.Register<TaskUpdateEvent, TaskUpdateEventHandler>();
+            subscriberRegistry.Register<TaskCompletedEvent, TaskUpdateEventHandler>();
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
             var handlerFactory = new ServiceProviderHandlerFactory(serviceProvider);
@@ -101,7 +111,7 @@ namespace ToDoSlackerApp
 
             messageMapperRegistry = new MessageMapperRegistry(messageMapperFactory)
             {
-                {typeof(TaskUpdateEvent), typeof(TaskUpdateEventMessageMapper)}
+                {typeof(TaskCompletedEvent), typeof(TaskCompleteEventMessageMapper)}
             };
 
 

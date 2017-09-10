@@ -1,11 +1,12 @@
 ﻿using Paramore.Brighter;
 
-namespace ToDoSlackerApp.Port
+namespace ToDoGitterApp.Ports
 {
-    internal class TaskUpdateEventHandler : RequestHandler<TaskUpdateEvent>
+    internal class TaskUpdateEventHandler : RequestHandler<TaskCompletedEvent>
     {
-        public override TaskUpdateEvent Handle(TaskUpdateEvent command)
+        public override TaskCompletedEvent Handle(TaskCompletedEvent command)
         {
+            System.Console.WriteLine($"Task {command.Title} is completed");
             return base.Handle(command);
         }
     }

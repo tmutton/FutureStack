@@ -28,30 +28,6 @@ services:
       - web
     volumes:
       - ./proxy.conf:/etc/nginx/conf.d/default.conf
-  worker:
-    build: ./ToDoBackend/src/ToDoApp
-    environment:
-      - RabbitMQ__Uri=amqp://guest:guest@todo_broker:5672
-      - RabbitMQ__Exchange=future.stack.exchange
-      - Database__ToDo=Server=todo_db;Uid=root;Pwd=root;Database=ToDoBackend
-      - Database__ToDoDb=Server=todo_db;Uid=root;Pwd=root
-    links:
-      - rabbit:todo_broker
-      - mysql:todo_db
-    depends_on:
-      - rabbit
-      - mysql
-
-  workergitter:
-    build: ./ToDoGitter/ToDoGitterApp
-    environment:
-      - RabbitMQ__Uri=amqp://guest:guest@todo_broker:5672
-      - RabbitMQ__Exchange=future.stack.exchange
-    links:
-      - rabbit:todo_broker
-    depends_on:
-      - rabbit
-      - web
   rabbit:
     image: rabbitmq:3-management
     hostname: todo_broker

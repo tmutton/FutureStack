@@ -42,8 +42,6 @@ namespace ToDoApi.Controllers
             toDo.Url = Url.RouteUrl("GetTodo", new { id = toDo.Id }, protocol: Request.Scheme);
 
             return Ok(toDo);
-
-            //TODO: Needs error handling for Not Found etc.
         }
 
         [HttpPost]

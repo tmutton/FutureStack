@@ -12,6 +12,18 @@ services:
     healthcheck:
       test: exit 0
 
+  rabbit:
+    image: rabbitmq:3-management
+    hostname: todo_broker
+    environment:
+      - RABBITMQ_ERLANG_COOKIE=SWQOKODSQALRPCLNMEQG
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+      - RABBITMQ_DEFAULT_VHOST=/
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+
   calendar-web:
     container_name: calendar-web
     build: ./api
@@ -32,9 +44,12 @@ services:
     build: ./app
     environment:
       - WORKER_CONFIG=development
+      - BROKER=amqp://guest:guest@todo_broker:5672
       - DEV_DATABASE_URL=postgres://docker:password@calendar-db:5432/calendar_dev
       - TEST_DATABASE_URL=postgres://docker:password@calendar-db:5432/calendar_test
     depends_on:
+      rabbit:
+        condition: service_started
       calendar-db:
         condition: service_healthy
     links:

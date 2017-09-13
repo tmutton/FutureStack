@@ -8,16 +8,19 @@ using ToDoCore.Adaptors.Db;
 using ToDoCore.Adaptors.Repositories;
 using ToDoCore.Model;
 using ToDoCore.Ports.Commands;
+using ToDoCore.Ports.Events;
 
 namespace ToDoCore.Ports.Handlers
 {
     public class AddToDoCommandHandlerAsync : RequestHandlerAsync<AddToDoCommand>
     {
         private readonly DbContextOptions<ToDoContext> _options;
+        private readonly IAmACommandProcessor _commandProcessor;
 
-        public AddToDoCommandHandlerAsync(DbContextOptions<ToDoContext> options)
+        public AddToDoCommandHandlerAsync(DbContextOptions<ToDoContext> options, IAmACommandProcessor commandProcessor)
         {
             _options = options;
+            _commandProcessor = commandProcessor;
         }
 
         [RequestLoggingAsync(step: 1, timing: HandlerTiming.Before)]
@@ -34,6 +37,8 @@ namespace ToDoCore.Ports.Handlers
                 );
                 command.ToDoItemId = savedItem.Id;
             }
+
+            await _commandProcessor.PostAsync(new TaskCreatedEvent(command.Title), cancellationToken: cancellationToken);
             return await base.HandleAsync(command, cancellationToken);
         }
     }

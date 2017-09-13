@@ -13,7 +13,8 @@ namespace ToDoTests
         {
         }
 
-        public bool SentCompletedEvent {get; private set;} 
+        public bool SentCompletedEvent {get; private set;}
+        public bool SentCreatedEvent { get; set; }
 
         void IAmACommandProcessor.Post<T>(T request)
         {
@@ -25,6 +26,10 @@ namespace ToDoTests
             if(request.GetType() == typeof(TaskCompletedEvent))
             {
                 SentCompletedEvent = true;
+            }
+            else if (request.GetType() == typeof(TaskCreatedEvent))
+            {
+                SentCreatedEvent = true;
             }
             return Task.CompletedTask;
         }

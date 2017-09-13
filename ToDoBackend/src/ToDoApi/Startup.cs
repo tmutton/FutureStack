@@ -14,23 +14,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MySql.Data.MySqlClient;
-using Paramore.Brighter;
-using Paramore.Brighter.MessageStore.MySql;
-using Paramore.Brighter.MessagingGateway.RMQ;
-using Paramore.Brighter.MessagingGateway.RMQ.MessagingGatewayConfiguration;
 using Polly;
 using SimpleInjector;
 using SimpleInjector.Integration.AspNetCore.Mvc;
 using SimpleInjector.Lifestyles;
 using ToDoCore.Adaptors;
-using ToDoCore.Adaptors.BrighterFactories;
 using ToDoCore.Adaptors.Db;
-using ToDoCore.Ports.Commands;
-using ToDoCore.Ports.Events;
 using ToDoCore.Ports.Handlers;
-using ToDoCore.Ports.Mappers;
 using ToDoCore.Ports.Queries;
-using PolicyRegistry = Paramore.Brighter.PolicyRegistry;
 
 
 namespace ToDoApi

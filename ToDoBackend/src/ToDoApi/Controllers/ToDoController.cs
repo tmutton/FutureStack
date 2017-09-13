@@ -1,10 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Darker;
 using Microsoft.AspNetCore.Mvc;
-using Paramore.Brighter;
-using ToDoCore.Ports.Commands;
 using ToDoCore.Ports.Queries;
-using ToDoCore.ViewModels;
 
 namespace ToDoApi.Controllers
 {

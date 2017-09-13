@@ -32,13 +32,5 @@ docker-compose up -d --build
 Run the tests at: https://www.todobackend.com/specs/index.html
 First, change the test target root: 
 
-**http://{host:ip}:8080/api/ToDo**
-
-where {host:ip} is your docker hosts IP address
-
-# Skipping the reverse proxy
-The site should also be running on 
-
 **http://{host:ip}:5000/api/ToDo**
 
-if you want to skip the proxy for testing

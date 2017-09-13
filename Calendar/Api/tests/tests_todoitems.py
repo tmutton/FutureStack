@@ -1,4 +1,5 @@
 from uuid import uuid4
+import unittest
 
 from app import db
 from app.models import ToDoItem
@@ -29,4 +30,6 @@ class ToDoItemTests(BaseTestCase):
             THen I should be able to query for all of them
         """
 
+if __name__ == '__main__':
+    unittest.main()
 

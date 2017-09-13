@@ -1,11 +1,27 @@
+import unittest
 from uuid import uuid4
 
+from config import config
+from model.models import Base
 from model.models import ToDoItem
-from tests.base import TestBase
 from ports.handlers import ToDoCreated, ToDoCreatedEventHandler
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 
-class HandlerTests(TestBase):
+class HandlerTests(unittest.TestCase):
+    def setUp(self):
+        db_uri = config['testing'].SQLALCHEMY_DATABASE_URI
+        self.engine = create_engine(db_uri)
+        self.uow = sessionmaker(bind=self.engine)
+        Base.metadata.create_all(self.engine)
+
+    def tearDown(self):
+        Base.metadata.drop_all(self.engine)
+
+    def test_me(self):
+        self.assertEqual('foo'.upper(), 'FOO')
+
     def test_todo_created_handler_saves(self):
         id = uuid4()
 
@@ -22,3 +38,6 @@ class HandlerTests(TestBase):
         self.assertEqual(todo_event.completed, todo.completed)
 
         session.close()
+
+if __name__ == '__main__':
+    unittest.main()

@@ -1,4 +1,5 @@
 import logging
+import os
 import sys
 import time
 from multiprocessing import Queue
@@ -23,7 +24,7 @@ logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 def command_processor_factory(channel_name:str):
 
-    engine = create_engine(config['production'].SQLALCHEMY_DATABASE_URI)
+    engine = create_engine(config[os.getenv('WORKER_CONFIG') or 'default'].SQLALCHEMY_DATABASE_URI)
 
     uow = sessionmaker(bind=engine)
 
@@ -43,15 +44,15 @@ def consumer_factory(connection: Connection, consumer_configuration: BrightsideC
 
 
 def map_my_command_to_request(message: BrightsideMessage) -> Request:
-    return JsonRequestSerializer(request=HelloWorldCommand(), serialized_request=message.body.value).deserialize_from_json()
+    return JsonRequestSerializer(request=ToDoCreated(), serialized_request=message.body.value).deserialize_from_json()
 
 
 def run():
     pipeline = Queue()
     connection = Connection("amqp://guest:guest@localhost:5672//", "paramore.brighter.exchange", is_durable=False)
-    # configuration = BrightsideConsumerConfiguration(pipeline, "greetings_queue", "greeting.event")
-    # consumer = ConsumerConfiguration(connection, configuration, consumer_factory, command_processor_factory, map_my_command_to_request)
-    # dispatcher = Dispatcher({"HelloWorldCommand": consumer})
+    configuration = BrightsideConsumerConfiguration(pipeline, "todocreated_queue", "todocreated.event")
+    consumer = ConsumerConfiguration(connection, configuration, consumer_factory, command_processor_factory, map_my_command_to_request)
+    dispatcher = Dispatcher({"ToDoCreatedEvent": consumer})
 
     dispatcher.receive()
 
@@ -66,4 +67,7 @@ def run():
 
 
 if __name__ == "__main__":
+    print("+==============+")
+    print("Starting Worker")
+    print("+==============+")
     run()

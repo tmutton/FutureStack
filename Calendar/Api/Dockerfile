@@ -5,9 +5,9 @@ RUN mkdir /code
 ADD . /code
 WORKDIR /code
 
-RUN chmod +x ./EntryPoint.sh
-
 RUN pip install -r requirements.txt
 
+ADD EntryPoint.sh /usr/local/bin/EntryPoint.sh
+RUN chmod +x /usr/local/bin/EntryPoint.sh
 
-
+CMD ["/usr/local/bin/EntryPoint.sh"]

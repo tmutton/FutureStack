@@ -47,3 +47,5 @@ class CalendarTests(unittest.TestCase):
         self.assertEqual(cal_ics, expected_ics_bytes)
 
 
+if __name__ == '__main__':
+    unittest.main()

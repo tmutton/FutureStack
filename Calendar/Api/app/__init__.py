@@ -20,8 +20,10 @@ def create_app(config_name):
 
     app = Flask(__name__)
 
-    from app.api.views import calendar_blueprint
-    app.register_blueprint(calendar_blueprint)
+    from app.api.calendar import ics_feed
+    app.register_blueprint(ics_feed)
+    from app.api.admin import calhelp
+    app.register_blueprint(calhelp)
 
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)

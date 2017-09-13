@@ -29,6 +29,20 @@ class ToDoItemTests(BaseTestCase):
             When I save them to the database
             THen I should be able to query for all of them
         """
+        id = uuid4()
+        todo_item = ToDoItem(id, "Finish this work", False)
+        db.session.add(todo_item)
+
+        id_2 = uuid4()
+        todo_item_2 = ToDoItem(id_2, "Make this work", False)
+        db.session.add(todo_item_2)
+
+        db.session.commit()
+
+        todos = ToDoItem.query.all()
+        self.assertEqual(todos[0].title, todo_item.title)
+        self.assertEqual(todos[1].title, todo_item_2.title)
+
 
 if __name__ == '__main__':
     unittest.main()

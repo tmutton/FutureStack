@@ -1,4 +1,4 @@
-version: '3.1'
+version: '2.1'
 services:
   web:
     build: ./ToDoBackend/src/ToDoApi
@@ -52,6 +52,35 @@ services:
     depends_on:
       - rabbit
       - web
+  calendar-web:
+    container_name: calendar-web
+    build: ./Calendar/api
+    ports:
+      - "8000:8000" # expose ports HOST:CONTAINER
+    environment:
+      - FLASK_CONFIG=development
+      - DEV_DATABASE_URL=postgres://docker:password@calendar-db:5432/calendar_dev
+      - TEST_DATABASE_URL=postgres://docker:password@calendar-db:5432/calendar_test
+    depends_on:
+      calendar-db:
+         condition: service_healthy
+    links:
+      - calendar-db
+  calendar-worker:
+    container_name: calendar-worker
+    build: ./Calendar/app
+    environment:
+      - WORKER_CONFIG=development
+      - BROKER=amqp://guest:guest@todo_broker:5672
+      - DEV_DATABASE_URL=postgres://docker:password@calendar-db:5432/calendar_dev
+      - TEST_DATABASE_URL=postgres://docker:password@calendar-db:5432/calendar_test
+    depends_on:
+      rabbit:
+        condition: service_started
+      calendar-db:
+        condition: service_healthy
+    links:
+      - calendar-db
   rabbit:
     image: rabbitmq:3-management
     hostname: todo_broker
@@ -72,4 +101,15 @@ services:
       MYSQL_ROOT_PASSWORD: "root"
     healthcheck:
       test: mysqladmin ping -h localhost -p$$MYSQL_ROOT_PASSWORD && test '0' -eq $$(ps aux | awk '{print $$11}' | grep -c -e '^mysql$$')
-    
+  calendar-db:
+    container_name: calendar-db
+    build: ./Calendar/api/db
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=docker
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: exit 0
+
+

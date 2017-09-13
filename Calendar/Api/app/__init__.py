@@ -31,7 +31,7 @@ def create_app(config_name):
     db.init_app(app)
     migrate.init_app(app, db)
 
-    for code in default_exceptions.keys():
-        app.error_handler_spec[None][code] = use_json_errors
+    # for code in default_exceptions.keys():
+    #    app.error_handler_spec[None][code] = use_json_errors
 
     return app

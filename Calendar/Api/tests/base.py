@@ -1,7 +1,6 @@
 from flask_testing import TestCase
 
 from app import create_app, db
-from config import config
 
 app = create_app('testing')
 

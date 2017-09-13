@@ -1,8 +1,9 @@
 #!/bin/sh
 
 # Apply database migrations
-echo "Apply database migrations"
-python /code/manage.py db migrate -m "docker initiated migration"
+# echo "Apply database migrations"
+# python /code/manage.py db migrate -m "docker initiated migration"
+python /code/manage.py recreate_db
 
 # Start server
 echo "Starting server"

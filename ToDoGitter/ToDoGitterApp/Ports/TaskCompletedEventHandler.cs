@@ -8,7 +8,7 @@ namespace ToDoGitterApp.Ports
     {
         public override TaskCompletedEvent Handle(TaskCompletedEvent command)
         {
-            var message = $"Task {command.Title} is completed";
+            var message = $"Task \"{command.Title}\" is completed";
 
             var gitterClient = new GitterClient();
 

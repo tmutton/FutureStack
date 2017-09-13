@@ -52,7 +52,7 @@ namespace ToDoCore.Ports.Handlers
             {
                 var taskCompleteEvent = new TaskCompletedEvent(title);
 
-                await _commandProcessor.PostAsync(taskCompleteEvent, cancellationToken: cancellationToken);
+                _commandProcessor.Post(taskCompleteEvent);
             }
 
             return await base.HandleAsync(command, cancellationToken);

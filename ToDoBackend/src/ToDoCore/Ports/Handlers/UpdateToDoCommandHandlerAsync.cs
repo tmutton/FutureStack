@@ -50,7 +50,7 @@ namespace ToDoCore.Ports.Handlers
 
             if (command.Complete.HasValue && command.Complete.Value)
             {
-                var taskCompleteEvent = new TaskCompletedEvent(command.Title);
+                var taskCompleteEvent = new TaskCompletedEvent(title);
 
                 await _commandProcessor.PostAsync(taskCompleteEvent, cancellationToken: cancellationToken);
             }

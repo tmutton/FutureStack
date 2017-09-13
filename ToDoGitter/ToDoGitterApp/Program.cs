@@ -15,7 +15,7 @@ namespace ToDoGitterApp
 {
     class Program
     {
-        public static IConfigurationRoot Configuration { get; set;  }
+        private static IConfigurationRoot Configuration { get; set; }
 
 
         static void Main(string[] args)
@@ -30,12 +30,10 @@ namespace ToDoGitterApp
             var builder = new ConfigurationBuilder()
                 .AddEnvironmentVariables();
 
-           Configuration = builder.Build();
+            Configuration = builder.Build();
 
 
-            MessageMapperRegistry messageMapperRegistry;
-            HandlerConfiguration handlerConfiguration;
-            var serviceProvider = ServiceProvider(container, out messageMapperRegistry, out handlerConfiguration);
+            var serviceProvider = ServiceProvider(container, out var messageMapperRegistry, out var handlerConfiguration);
 
             var rmqConnnection = new RmqMessagingGatewayConnection
             {
@@ -101,12 +99,12 @@ namespace ToDoGitterApp
             out MessageMapperRegistry messageMapperRegistry, out HandlerConfiguration handlerConfiguration)
         {
             container.Register<IHandleRequests<TaskCompletedEvent>, TaskCompletedEventHandler>();
-           container.Register<IAmAMessageMapper<TaskCompletedEvent>, TaskCompletedEventMessageMapper>();
-        
+            container.Register<IAmAMessageMapper<TaskCompletedEvent>, TaskCompletedEventMessageMapper>();
+
             var subscriberRegistry = new SubscriberRegistry();
             subscriberRegistry.Register<TaskCompletedEvent, TaskCompletedEventHandler>();
 
-            
+
             var handlerFactory = new ServiceProviderHandlerFactory(container);
             var messageMapperFactory = new ServiceProviderMessageMapperFactory(container);
 

@@ -8,6 +8,7 @@ using Paramore.Brighter.ServiceActivator;
 using Polly;
 using Serilog;
 using Serilog.Events;
+using SimpleInjector;
 using ToDoGitterApp.Ports;
 
 namespace ToDoGitterApp
@@ -20,11 +21,11 @@ namespace ToDoGitterApp
         static void Main(string[] args)
         {
 
-            Log.Logger = new LoggerConfiguration().MinimumLevel.Debug()
+            Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console(LogEventLevel.Debug)
                 .CreateLogger();
 
-            var serviceCollection = new ServiceCollection();
+            var container = new Container();
 
             var builder = new ConfigurationBuilder()
                 .AddEnvironmentVariables();
@@ -34,7 +35,7 @@ namespace ToDoGitterApp
 
             MessageMapperRegistry messageMapperRegistry;
             HandlerConfiguration handlerConfiguration;
-            var serviceProvider = ServiceProvider(serviceCollection, out messageMapperRegistry, out handlerConfiguration);
+            var serviceProvider = ServiceProvider(container, out messageMapperRegistry, out handlerConfiguration);
 
             var rmqConnnection = new RmqMessagingGatewayConnection
             {
@@ -96,19 +97,18 @@ namespace ToDoGitterApp
             return policyRegistry;
         }
 
-        private static ServiceProvider ServiceProvider(ServiceCollection serviceCollection,
+        private static Container ServiceProvider(Container container,
             out MessageMapperRegistry messageMapperRegistry, out HandlerConfiguration handlerConfiguration)
         {
-            serviceCollection.AddTransient<IHandleRequests<TaskCompletedEvent>, TaskCompletedEventHandler>();
-           serviceCollection.AddTransient<IAmAMessageMapper<TaskCompletedEvent>, TaskCompletedEventMessageMapper>();
+            container.Register<IHandleRequests<TaskCompletedEvent>, TaskCompletedEventHandler>();
+           container.Register<IAmAMessageMapper<TaskCompletedEvent>, TaskCompletedEventMessageMapper>();
         
             var subscriberRegistry = new SubscriberRegistry();
             subscriberRegistry.Register<TaskCompletedEvent, TaskCompletedEventHandler>();
 
-            var serviceProvider = serviceCollection.BuildServiceProvider(true);
-
-            var handlerFactory = new ServiceProviderHandlerFactory(serviceProvider);
-            var messageMapperFactory = new ServiceProviderMessageMapperFactory(serviceProvider);
+            
+            var handlerFactory = new ServiceProviderHandlerFactory(container);
+            var messageMapperFactory = new ServiceProviderMessageMapperFactory(container);
 
             messageMapperRegistry = new MessageMapperRegistry(messageMapperFactory)
             {
@@ -117,7 +117,7 @@ namespace ToDoGitterApp
 
 
             handlerConfiguration = new HandlerConfiguration(subscriberRegistry, handlerFactory);
-            return serviceProvider;
+            return container;
         }
     }
 }

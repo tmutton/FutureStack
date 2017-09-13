@@ -1,4 +1,6 @@
-﻿using Paramore.Brighter;
+﻿using System.Threading.Tasks;
+using Paramore.Brighter;
+using ToDoGitterApp.Adapter.Gitter;
 
 namespace ToDoGitterApp.Ports
 {
@@ -6,7 +8,12 @@ namespace ToDoGitterApp.Ports
     {
         public override TaskCompletedEvent Handle(TaskCompletedEvent command)
         {
-            System.Console.WriteLine($"Task {command.Title} is completed");
+            var message = $"Task {command.Title} is completed";
+
+            var gitterClient = new GitterClient();
+
+            gitterClient.Send(message).Wait();
+
             return base.Handle(command);
         }
     }

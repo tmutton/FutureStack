@@ -9,3 +9,10 @@ cd .\ToDoApp
 rm "out" -recurse -force
 dotnet publish -c Release -o out
 popd
+cd ToDoGitter
+dotnet restore
+dotnet build
+cd ToDoGitterApp
+rm "out" -recurse -force
+dotnet publish -c Release -o out
+cd ../../..

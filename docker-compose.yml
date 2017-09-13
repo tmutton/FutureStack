@@ -42,16 +42,16 @@ services:
       - rabbit
       - mysql
 
-  workergitter:
-    build: ./ToDoGitter/ToDoGitterApp
-    environment:
-      - RabbitMQ__Uri=amqp://guest:guest@todo_broker:5672
-      - RabbitMQ__Exchange=future.stack.exchange
-    links:
-      - rabbit:todo_broker
-    depends_on:
-      - rabbit
-      - web
+  # workergitter:
+  #   build: ./ToDoGitter/ToDoGitterApp
+  #   environment:
+  #     - RabbitMQ__Uri=amqp://guest:guest@todo_broker:5672
+  #     - RabbitMQ__Exchange=future.stack.exchange
+  #   links:
+  #     - rabbit:todo_broker
+  #   depends_on:
+  #     - rabbit
+  #     - web
   rabbit:
     image: rabbitmq:3-management
     hostname: todo_broker
@@ -62,6 +62,7 @@ services:
       RABBITMQ_DEFAULT_VHOST: "/"
     ports:
       - "15672:15672"
+      - "5672:5672"
   mysql:
     hostname: todo_db
     image: mysql

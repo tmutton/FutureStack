@@ -20,7 +20,7 @@ namespace ToDoGitterApp
         static void Main(string[] args)
         {
 
-            Log.Logger = new LoggerConfiguration()
+            Log.Logger = new LoggerConfiguration().MinimumLevel.Debug()
                 .WriteTo.Console(LogEventLevel.Debug)
                 .CreateLogger();
 
@@ -99,19 +99,20 @@ namespace ToDoGitterApp
         private static ServiceProvider ServiceProvider(ServiceCollection serviceCollection,
             out MessageMapperRegistry messageMapperRegistry, out HandlerConfiguration handlerConfiguration)
         {
-            serviceCollection.AddTransient<IHandleRequests<TaskCompletedEvent>, TaskUpdateEventHandler>();
-            serviceCollection.AddTransient<IAmAMessageMapper<TaskCompletedEvent>, TaskCompleteEventMessageMapper>();
-
+            serviceCollection.AddTransient<IHandleRequests<TaskCompletedEvent>, TaskCompletedEventHandler>();
+           serviceCollection.AddTransient<IAmAMessageMapper<TaskCompletedEvent>, TaskCompletedEventMessageMapper>();
+        
             var subscriberRegistry = new SubscriberRegistry();
-            subscriberRegistry.Register<TaskCompletedEvent, TaskUpdateEventHandler>();
+            subscriberRegistry.Register<TaskCompletedEvent, TaskCompletedEventHandler>();
 
-            var serviceProvider = serviceCollection.BuildServiceProvider();
+            var serviceProvider = serviceCollection.BuildServiceProvider(true);
+
             var handlerFactory = new ServiceProviderHandlerFactory(serviceProvider);
             var messageMapperFactory = new ServiceProviderMessageMapperFactory(serviceProvider);
 
             messageMapperRegistry = new MessageMapperRegistry(messageMapperFactory)
             {
-                {typeof(TaskCompletedEvent), typeof(TaskCompleteEventMessageMapper)}
+                {typeof(TaskCompletedEvent), typeof(TaskCompletedEventMessageMapper)}
             };
 
 

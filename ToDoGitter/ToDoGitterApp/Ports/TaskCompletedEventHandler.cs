@@ -2,7 +2,7 @@
 
 namespace ToDoGitterApp.Ports
 {
-    internal class TaskUpdateEventHandler : RequestHandler<TaskCompletedEvent>
+    internal class TaskCompletedEventHandler : RequestHandler<TaskCompletedEvent>
     {
         public override TaskCompletedEvent Handle(TaskCompletedEvent command)
         {

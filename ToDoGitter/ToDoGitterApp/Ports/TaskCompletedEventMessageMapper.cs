@@ -3,7 +3,7 @@ using Paramore.Brighter;
 
 namespace ToDoGitterApp.Ports
 {
-    public class TaskCompleteEventMessageMapper : IAmAMessageMapper<TaskCompletedEvent>
+    public class TaskCompletedEventMessageMapper : IAmAMessageMapper<TaskCompletedEvent>
     {
         public Message MapToMessage(TaskCompletedEvent request)
         {

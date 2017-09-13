@@ -17,7 +17,6 @@ def index():
     db.session.add(todo_item)
     db.session.commit()
 
-
     todos = ToDoItem.query.all()
 
     for todo in todos:

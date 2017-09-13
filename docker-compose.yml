@@ -71,7 +71,7 @@ services:
     build: ./Calendar/app
     environment:
       - WORKER_CONFIG=development
-      - BROKER=amqp://guest:guest@todo_broker:5672
+      - BROKER=amqp://guest:guest@localhost:5672
       - DEV_DATABASE_URL=postgres://docker:password@calendar-db:5432/calendar_dev
       - TEST_DATABASE_URL=postgres://docker:password@calendar-db:5432/calendar_test
     depends_on:

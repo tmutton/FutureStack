@@ -50,8 +50,8 @@ def map_my_command_to_request(message: BrightsideMessage) -> Request:
 def run():
     pipeline = Queue()
     amqp_uri = os.getenv('BROKER')
-    connection = Connection(amqp_uri, "paramore.brighter.exchange", is_durable=False)
-    configuration = BrightsideConsumerConfiguration(pipeline, "taskcreated_queue", "taskcreated.event")
+    connection = Connection(amqp_uri, "future.stack.exchange", is_durable=False)
+    configuration = BrightsideConsumerConfiguration(pipeline, "taskcreated.event", "taskcreated.event")
     consumer = ConsumerConfiguration(connection, configuration, consumer_factory, command_processor_factory, map_my_command_to_request)
     dispatcher = Dispatcher({"ToDoCreatedEvent": consumer})
 

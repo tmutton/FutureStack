@@ -28,27 +28,15 @@ class FakeMessageStore(BrightsideMessageStore):
 
 
 class ToDoCreated(Event):
-    def __init__(self, id: UUID, title: str, completed:bool) -> None:
+    """Note that for interop, we use a field, named in camelCase; we don't want _x field names, because that exposes an
+        implementation detail when serialized.  Consumers in other languages may not follow that Python idiom and
+        thus hydrate these private fields correctly.
+    """
+    def __init__(self, id: UUID=None, title: str=None, completed:bool=None) -> None:
         super().__init__()
-        self._id = id
-        self._title = title
-        self._completed = completed
-
-    @property
-    def id(self):
-        return self._id
-
-    @property
-    def title(self):
-        return self._title
-
-    @property
-    def completed(self):
-        return self._completed
-
-    @property
-    def order(self):
-        return self._order
+        self.Id = id
+        self.Title = title
+        self.Completed = completed
 
 
 class ToDoCreatedEventHandler(Handler):
@@ -58,7 +46,7 @@ class ToDoCreatedEventHandler(Handler):
     def handle(self, request: ToDoCreated) -> None:
         session = self._uow()
         try:
-            todo = ToDoItem(id=request.id, title=request.title, completed=request.completed)
+            todo = ToDoItem(id=request.Id, title=request.Title, completed=request.Completed)
             session.add(todo)
             session.commit()
         except:

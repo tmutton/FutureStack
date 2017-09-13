@@ -1,7 +1,6 @@
 import logging
 import sys
 import time
-
 from multiprocessing import Queue
 
 from arame.gateway import ArameConsumer
@@ -11,6 +10,9 @@ from brightside.dispatch import ConsumerConfiguration, Dispatcher
 from brightside.messaging import BrightsideConsumerConfiguration, BrightsideMessage
 from brightside.registry import Registry
 from arame.messaging import JsonRequestSerializer
+from flask_sqlalchemy import SQLAlchemy
+
+from worker.handlers import ToDoCreated, ToDoCreatedEventHandler
 
 KEYBOARD_INTERRUPT_SLEEP = 3    # How long before checking for a keyboard interrupt
 
@@ -18,10 +20,11 @@ logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 
 def command_processor_factory(channel_name:str):
-    # handler = HelloWorldCommandHandler()
+    db = SQLAlchemy()
+    handler = ToDoCreatedEventHandler(db)
 
     subscriber_registry = Registry()
-    # subscriber_registry.register(HelloWorldCommand, lambda: handler)
+    subscriber_registry.register(ToDoCreated, lambda: handler)
 
     command_processor = CommandProcessor(
         registry=subscriber_registry

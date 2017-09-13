@@ -19,7 +19,7 @@ def recreate_db():
 @manager.command
 def test():
     """Runs the tests without code coverage."""
-    tests = unittest.TestLoader().discover('app/tests', pattern='tests*.py')
+    tests = unittest.TestLoader().discover('tests', pattern='tests*.py')
     result = unittest.TextTestRunner(verbosity=2).run(tests)
     if result.wasSuccessful():
         return 0

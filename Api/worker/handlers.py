@@ -1,5 +1,6 @@
 from uuid import UUID, uuid4
 
+from flask_sqlalchemy import SQLAlchemy
 from brightside.handler import Handler, Event
 from brightside.messaging import BrightsideMessage, BrightsideMessageStore
 
@@ -47,6 +48,10 @@ class ToDoCreated(Event):
     def order(self):
         return self._order
 
+
 class ToDoCreatedEventHandler(Handler):
+    def __init__(self, db: SQLAlchemy):
+        self._db = db
+
     def handle(self, request: ToDoCreated) -> None:
         pass

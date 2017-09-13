@@ -10,9 +10,11 @@ from brightside.dispatch import ConsumerConfiguration, Dispatcher
 from brightside.messaging import BrightsideConsumerConfiguration, BrightsideMessage
 from brightside.registry import Registry
 from arame.messaging import JsonRequestSerializer
-from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
-from worker.handlers import ToDoCreated, ToDoCreatedEventHandler
+from config import config
+from ports.handlers import ToDoCreated, ToDoCreatedEventHandler
 
 KEYBOARD_INTERRUPT_SLEEP = 3    # How long before checking for a keyboard interrupt
 
@@ -20,8 +22,12 @@ logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 
 def command_processor_factory(channel_name:str):
-    db = SQLAlchemy()
-    handler = ToDoCreatedEventHandler(db)
+
+    engine = create_engine(config['production'].SQLALCHEMY_DATABASE_URI)
+
+    uow = sessionmaker(bind=engine)
+
+    handler = ToDoCreatedEventHandler(uow)
 
     subscriber_registry = Registry()
     subscriber_registry.register(ToDoCreated, lambda: handler)

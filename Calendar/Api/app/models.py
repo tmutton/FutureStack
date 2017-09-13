@@ -10,6 +10,7 @@ db.UUID = UUID
 
 class ToDoItem(db.Model):
     __tablename__ = 'todo'
+
     id = db.Column(db.UUID(as_uuid=True), primary_key=True, default=uuid4)
     completed = db.Column(db.Boolean())
     title = db.Column(db.String())
@@ -20,7 +21,7 @@ class ToDoItem(db.Model):
         self.completed = completed
 
     def __repr__(self):
-        return '<Summary %r Status %r>' % (self.summary, self.status)
+        return "<ToDo(id='%s', title='%s', completed='%s' >" % (self.id, self.title, self.completed)
 
 
 def make_calendar() -> Calendar:

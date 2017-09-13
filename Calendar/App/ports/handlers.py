@@ -1,8 +1,10 @@
 from uuid import UUID, uuid4
 
-from flask_sqlalchemy import SQLAlchemy
 from brightside.handler import Handler, Event
 from brightside.messaging import BrightsideMessage, BrightsideMessageStore
+from sqlalchemy.orm import sessionmaker
+
+from model.models import ToDoItem
 
 
 class FakeMessageStore(BrightsideMessageStore):
@@ -50,8 +52,19 @@ class ToDoCreated(Event):
 
 
 class ToDoCreatedEventHandler(Handler):
-    def __init__(self, db: SQLAlchemy):
-        self._db = db
+    def __init__(self, uow: sessionmaker):
+        self._uow = uow
 
     def handle(self, request: ToDoCreated) -> None:
-        pass
+        session = self._uow()
+        try:
+            todo = ToDoItem(id=request.id, title=request.title, completed=request.completed)
+            session.add(todo)
+            session.commit()
+        except:
+            session.rollback()
+            raise
+        finally:
+            session.close()
+
+

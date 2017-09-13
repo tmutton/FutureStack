@@ -1,9 +1,8 @@
 from uuid import uuid4
 
-from app import db
-from app.models import ToDoItem
+from model import ToDoItem
 from tests.base import BaseTestCase
-from worker.handlers import ToDoCreated, ToDoCreatedEventHandler
+from ports.handlers import ToDoCreated, ToDoCreatedEventHandler
 
 
 class HandlerTests(BaseTestCase):

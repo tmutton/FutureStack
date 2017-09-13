@@ -43,7 +43,6 @@ namespace ToDoTests.Core.Ports.Handlers
         }
 
         [Test]
-        [Ignore("Skip and take not working under EF Core")]
         public async Task Test_Retrieving_All_Tasks()
         {
             /*
@@ -67,10 +66,8 @@ namespace ToDoTests.Core.Ports.Handlers
             }
 
             var retriever = new ToDoQueryAllHandlerAsync(options);
-            var request = await retriever.ExecuteAsync(new ToDoQueryAll(1, 3));
-            Assert.AreEqual(request.ToDoItems.Count(), 3);
-            request = retriever.Execute(new ToDoQueryAll(2, 3));   //only two available on this page
-            Assert.AreEqual(request.ToDoItems.Count(), 2);
+            var request = await retriever.ExecuteAsync(new ToDoQueryAll());
+            Assert.AreEqual(request.ToDoItems.Count(), 5);
 
 
 

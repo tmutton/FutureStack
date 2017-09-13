@@ -15,9 +15,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MySql.Data.MySqlClient;
 using Paramore.Brighter;
-using Paramore.Brighter.MessageStore.MySql;
-using Paramore.Brighter.MessagingGateway.RMQ;
-using Paramore.Brighter.MessagingGateway.RMQ.MessagingGatewayConfiguration;
 using Polly;
 using SimpleInjector;
 using SimpleInjector.Integration.AspNetCore.Mvc;
@@ -26,9 +23,7 @@ using ToDoCore.Adaptors;
 using ToDoCore.Adaptors.BrighterFactories;
 using ToDoCore.Adaptors.Db;
 using ToDoCore.Ports.Commands;
-using ToDoCore.Ports.Events;
 using ToDoCore.Ports.Handlers;
-using ToDoCore.Ports.Mappers;
 using ToDoCore.Ports.Queries;
 using PolicyRegistry = Paramore.Brighter.PolicyRegistry;
 
@@ -125,7 +120,6 @@ namespace ToDoApi
 
             EnsureDatabaseCreated();
 
-            CreateMessageTable(Configuration["Database:MessageStore"], Configuration["Database:MessageTableName"]);
         }
 
         private void InitializeContainer(IApplicationBuilder app)
@@ -200,32 +194,10 @@ namespace ToDoApi
 
             var servicesHandlerFactory = new ServicesHandlerFactoryAsync(_container);
 
-            var messagingGatewayConfiguration = RmqGatewayBuilder.With.Uri(new Uri(Configuration["RabbitMQ:Uri"])).Exchange(Configuration["RabbitMQ:Exchange"]).DefaultQueues();
-
-            var gateway = new RmqMessageProducer(messagingGatewayConfiguration);
-            var sqlMessageStore = new MySqlMessageStore(new MySqlMessageStoreConfiguration(Configuration["Database:MessageStore"], Configuration["Database:MessageTableName"]));
-
-             var messageMapperFactory = new MessageMapperFactory(_container);
-            _container.Register<IAmAMessageMapper<BulkAddToDoCommand>, BulkAddToDoMessageMapper>();
-            _container.Register<IAmAMessageMapper<TaskCompletedEvent>, TaskCompleteEventMessageMapper>();
-            _container.Register<IAmAMessageMapper<TaskCreatedEvent>, TaskCreatedEventMessageMapper>();
-
-            var messageMapperRegistry = new MessageMapperRegistry(messageMapperFactory)
-            {
-                {typeof(BulkAddToDoCommand), typeof(BulkAddToDoMessageMapper)},
-                {typeof(TaskCompletedEvent), typeof(TaskCompleteEventMessageMapper)},
-                {typeof(TaskCreatedEvent), typeof(TaskCreatedEventMessageMapper)}
-            };
-
-            var messagingConfiguration = new MessagingConfiguration(
-                messageStore: sqlMessageStore,
-                messageProducer: gateway,
-                messageMapperRegistry: messageMapperRegistry);
-
             var commandProcessor = CommandProcessorBuilder.With()
                 .Handlers(new Paramore.Brighter.HandlerConfiguration(subscriberRegistry, servicesHandlerFactory))
                 .Policies(policyRegistry)
-                .TaskQueues(messagingConfiguration)
+                .NoTaskQueues()
                 .RequestContextFactory(new Paramore.Brighter.InMemoryRequestContextFactory())
                 .Build();
 
@@ -257,28 +229,7 @@ namespace ToDoApi
                 context.Database.EnsureCreated();
             }
         }
-
-
-        private static void CreateMessageTable(string dataSourceTestDb, string tableNameMessages)
-        {
-            try
-            {
-                using (var sqlConnection = new MySqlConnection(dataSourceTestDb))
-                {
-                    sqlConnection.Open();
-                    using (var command = sqlConnection.CreateCommand())
-                    {
-                        command.CommandText = MySqlMessageStoreBuilder.GetDDL(tableNameMessages);
-                        command.ExecuteScalar();
-                    }
-                }
-                
-            }
-            catch (System.Exception e)
-            {
-                Console.WriteLine($"Issue with creating MessageStore table, {e.Message}");
-            }
-        }
+       
     }
 }
 

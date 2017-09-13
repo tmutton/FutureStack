@@ -25,25 +25,4 @@ namespace ToDoCore.Adaptors.BrighterFactories
         }
     }
 
-
-    public class ServicesHandlerFactory : IAmAHandlerFactory
-    {
-        private readonly Container _serviceProvider;
-
-        public ServicesHandlerFactory(Container serviceProvider)
-        {
-            _serviceProvider = serviceProvider;
-        }
-
-        public IHandleRequests Create(Type handlerType)
-        {
-            return _serviceProvider.GetInstance(handlerType) as IHandleRequests;
-        }
-
-        public void Release(IHandleRequests handler)
-        {
-            var disposable = handler as IDisposable;
-            disposable?.Dispose();
-        }
-    }
 }

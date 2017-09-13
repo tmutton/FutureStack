@@ -5,14 +5,10 @@ namespace ToDoCore.Ports.Queries
 {
     public class ToDoQueryAll : IQueryRequest<ToDoQueryAll.Result>
     {
-        public ToDoQueryAll(int pageNumber, int pageSize)
+        public ToDoQueryAll()
         {
-            PageNumber = pageNumber;
-            PageSize = pageSize;
         }
 
-        public int PageNumber { get; }
-        public int PageSize { get; }
 
         public sealed class Result : IQueryResponse
         {

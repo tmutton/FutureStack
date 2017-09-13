@@ -15,6 +15,15 @@ namespace ToDoGitterApp.Adapter.Gitter
 
         public async Task<string> Send(string message)
         {
+            if (string.IsNullOrEmpty(_token))
+            {
+                Console.WriteLine("**********************************************************************************");
+                Console.WriteLine(message);
+                Console.WriteLine("**********************************************************************************");
+
+                return "done";
+            }
+            
             using (HttpClient client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);

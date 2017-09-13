@@ -12,24 +12,16 @@
       "commandName": "IISExpress",
       "launchBrowser": true,
       "environmentVariables": {
-        "RabbitMQ:Uri": "amqp://guest:guest@localhost:5672",
-        "Database:MessageTableName": "Messages",
-        "RabbitMQ:Exchange": "future.stack.exchange",
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "Database:ToDo": "Server=localhost;Uid=root;Pwd=root;Database=ToDoBackend",
-        "Database:MessageStore": "Server=localhost;Uid=root;Pwd=root;Database=ToDoBackend"
+        "Database:ToDo": "Server=localhost;Uid=root;Pwd=root;Database=ToDoBackend"
       }
     },
     "ToDoApi": {
       "commandName": "Project",
       "applicationUrl": "http://localhost:5000",
       "environmentVariables": {
-        "RabbitMQ:Uri": "amqp://guest:guest@localhost:5672",
-        "Database:MessageTableName": "Messages",
-        "RabbitMQ:Exchange": "future.stack.exchange",
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "Database:ToDo": "Server=localhost;Uid=root;Pwd=root;Database=ToDoBackend",
-        "Database:MessageStore": "Server=localhost;Uid=root;Pwd=root;Database=ToDoBackend"
+        "Database:ToDo": "Server=localhost;Uid=root;Pwd=root;Database=ToDoBackend"
       }
     }
   }

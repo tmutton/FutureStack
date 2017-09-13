@@ -124,8 +124,6 @@ namespace ToDoApi
             CheckDbIsUp(Configuration["Database:ToDoDb"]);
 
             EnsureDatabaseCreated();
-
-            CreateMessageTable(Configuration["Database:MessageStore"], Configuration["Database:MessageTableName"]);
         }
 
         private void InitializeContainer(IApplicationBuilder app)
@@ -135,7 +133,6 @@ namespace ToDoApi
             _container.RegisterMvcControllers(app);
             _container.RegisterMvcViewComponents(app);
 
-            RegisterCommandProcessor();
             RegisterQueryProcessor();
 
             // Cross-wire ASP.NET services (if any). For instance:
@@ -149,10 +146,9 @@ namespace ToDoApi
         private void RegisterQueryProcessor()
         {
             var registry = new QueryHandlerRegistry();
-            registry.Register<ToDoByIdQuery, ToDoByIdQuery.Result, ToDoByIdQueryHandlerAsync>();
             registry.Register<ToDoQueryAll, ToDoQueryAll.Result, ToDoQueryAllHandlerAsync>();
 
-            _container.Register<IQueryHandler<ToDoByIdQuery, ToDoByIdQuery.Result>, ToDoByIdQueryHandlerAsync>(Lifestyle.Scoped);
+         
             _container.Register<IQueryHandler<ToDoQueryAll, ToDoQueryAll.Result>, ToDoQueryAllHandlerAsync>(Lifestyle.Scoped);
 
             var retryPolicy = Policy.Handle<Exception>().WaitAndRetryAsync(new[] { TimeSpan.FromMilliseconds(50), TimeSpan.FromMilliseconds(100), TimeSpan.FromMilliseconds(150) });
@@ -168,68 +164,6 @@ namespace ToDoApi
                 .Build();
             _container.RegisterSingleton<IQueryProcessor>(queryProcessor);
 
-        }
-
-
-        private void RegisterCommandProcessor()
-        {
-            //create handler 
-            var subscriberRegistry = new SubscriberRegistry();
-            _container.Register<IHandleRequestsAsync<AddToDoCommand>, AddToDoCommandHandlerAsync>(Lifestyle.Scoped);
-            _container.Register<IHandleRequestsAsync<DeleteAllToDosCommand>, DeleteAllToDosCommandHandlerAsync>(Lifestyle.Scoped);
-            _container.Register<IHandleRequestsAsync<DeleteToDoByIdCommand>, DeleteToDoByIdCommandHandlerAsync>(Lifestyle.Scoped);
-            _container.Register<IHandleRequestsAsync<UpdateToDoCommand>, UpdateToDoCommandHandlerAsync>(Lifestyle.Scoped);
-
-            subscriberRegistry.RegisterAsync<AddToDoCommand, AddToDoCommandHandlerAsync>();
-            subscriberRegistry.RegisterAsync<DeleteAllToDosCommand, DeleteAllToDosCommandHandlerAsync>();
-            subscriberRegistry.RegisterAsync<DeleteToDoByIdCommand, DeleteToDoByIdCommandHandlerAsync>();
-            subscriberRegistry.RegisterAsync<UpdateToDoCommand, UpdateToDoCommandHandlerAsync>();
-
-            //create policies
-            var retryPolicy = Policy.Handle<Exception>().WaitAndRetry(new[] { TimeSpan.FromMilliseconds(50), TimeSpan.FromMilliseconds(100), TimeSpan.FromMilliseconds(150) });
-            var circuitBreakerPolicy = Policy.Handle<Exception>().CircuitBreaker(1, TimeSpan.FromMilliseconds(500));
-             var retryPolicyAsync = Policy.Handle<Exception>().WaitAndRetryAsync(new[] { TimeSpan.FromMilliseconds(50), TimeSpan.FromMilliseconds(100), TimeSpan.FromMilliseconds(150) });
-            var circuitBreakerPolicyAsync = Policy.Handle<Exception>().CircuitBreakerAsync(1, TimeSpan.FromMilliseconds(500));
-            var policyRegistry = new PolicyRegistry()
-            {
-                { CommandProcessor.RETRYPOLICY, retryPolicy },
-                { CommandProcessor.CIRCUITBREAKER, circuitBreakerPolicy },
-                { CommandProcessor.RETRYPOLICYASYNC, retryPolicyAsync },
-                { CommandProcessor.CIRCUITBREAKERASYNC, circuitBreakerPolicyAsync }
-            };
-
-            var servicesHandlerFactory = new ServicesHandlerFactoryAsync(_container);
-
-            var messagingGatewayConfiguration = RmqGatewayBuilder.With.Uri(new Uri(Configuration["RabbitMQ:Uri"])).Exchange(Configuration["RabbitMQ:Exchange"]).DefaultQueues();
-
-            var gateway = new RmqMessageProducer(messagingGatewayConfiguration);
-            var sqlMessageStore = new MySqlMessageStore(new MySqlMessageStoreConfiguration(Configuration["Database:MessageStore"], Configuration["Database:MessageTableName"]));
-
-             var messageMapperFactory = new MessageMapperFactory(_container);
-            _container.Register<IAmAMessageMapper<BulkAddToDoCommand>, BulkAddToDoMessageMapper>();
-            _container.Register<IAmAMessageMapper<TaskCompletedEvent>, TaskCompleteEventMessageMapper>();
-            _container.Register<IAmAMessageMapper<TaskCreatedEvent>, TaskCreatedEventMessageMapper>();
-
-            var messageMapperRegistry = new MessageMapperRegistry(messageMapperFactory)
-            {
-                {typeof(BulkAddToDoCommand), typeof(BulkAddToDoMessageMapper)},
-                {typeof(TaskCompletedEvent), typeof(TaskCompleteEventMessageMapper)},
-                {typeof(TaskCreatedEvent), typeof(TaskCreatedEventMessageMapper)}
-            };
-
-            var messagingConfiguration = new MessagingConfiguration(
-                messageStore: sqlMessageStore,
-                messageProducer: gateway,
-                messageMapperRegistry: messageMapperRegistry);
-
-            var commandProcessor = CommandProcessorBuilder.With()
-                .Handlers(new Paramore.Brighter.HandlerConfiguration(subscriberRegistry, servicesHandlerFactory))
-                .Policies(policyRegistry)
-                .TaskQueues(messagingConfiguration)
-                .RequestContextFactory(new Paramore.Brighter.InMemoryRequestContextFactory())
-                .Build();
-
-            _container.RegisterSingleton<IAmACommandProcessor>(commandProcessor);
         }
 
         private static void CheckDbIsUp(string connectionString)
@@ -257,28 +191,7 @@ namespace ToDoApi
                 context.Database.EnsureCreated();
             }
         }
-
-
-        private static void CreateMessageTable(string dataSourceTestDb, string tableNameMessages)
-        {
-            try
-            {
-                using (var sqlConnection = new MySqlConnection(dataSourceTestDb))
-                {
-                    sqlConnection.Open();
-                    using (var command = sqlConnection.CreateCommand())
-                    {
-                        command.CommandText = MySqlMessageStoreBuilder.GetDDL(tableNameMessages);
-                        command.ExecuteScalar();
-                    }
-                }
-                
-            }
-            catch (System.Exception e)
-            {
-                Console.WriteLine($"Issue with creating MessageStore table, {e.Message}");
-            }
-        }
+      
     }
 }
 

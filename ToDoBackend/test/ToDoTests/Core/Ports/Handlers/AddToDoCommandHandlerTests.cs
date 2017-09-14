@@ -42,7 +42,7 @@ namespace ToDoTests.Core.Ports.Handlers
                 Assert.AreEqual(ORDER_NUM,  context.ToDoItems.Single().Order.Value);
             }
             
-            Assert.IsTrue(fakeCommandProcessor.SentCreatedEvent);
+            //Assert.IsTrue(fakeCommandProcessor.SentCreatedEvent);
         }
     }
 }

@@ -206,15 +206,11 @@ namespace ToDoApi
             var sqlMessageStore = new MySqlMessageStore(new MySqlMessageStoreConfiguration(Configuration["Database:MessageStore"], Configuration["Database:MessageTableName"]));
 
              var messageMapperFactory = new MessageMapperFactory(_container);
-            _container.Register<IAmAMessageMapper<BulkAddToDoCommand>, BulkAddToDoMessageMapper>();
             _container.Register<IAmAMessageMapper<TaskCompletedEvent>, TaskCompleteEventMessageMapper>();
-            _container.Register<IAmAMessageMapper<TaskCreatedEvent>, TaskCreatedEventMessageMapper>();
 
             var messageMapperRegistry = new MessageMapperRegistry(messageMapperFactory)
             {
-                {typeof(BulkAddToDoCommand), typeof(BulkAddToDoMessageMapper)},
-                {typeof(TaskCompletedEvent), typeof(TaskCompleteEventMessageMapper)},
-                {typeof(TaskCreatedEvent), typeof(TaskCreatedEventMessageMapper)}
+                {typeof(TaskCompletedEvent), typeof(TaskCompleteEventMessageMapper)}
             };
 
             var messagingConfiguration = new MessagingConfiguration(

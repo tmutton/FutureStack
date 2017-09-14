@@ -71,7 +71,7 @@ services:
     build: ./Calendar/app
     environment:
       - WORKER_CONFIG=development
-      - BROKER=amqp://guest:guest@localhost:5672
+      - BROKER=amqp://guest:guest@todo_broker:5672
       - DEV_DATABASE_URL=postgres://docker:password@calendar-db:5432/calendar_dev
       - TEST_DATABASE_URL=postgres://docker:password@calendar-db:5432/calendar_test
     depends_on:
@@ -81,6 +81,7 @@ services:
         condition: service_healthy
     links:
       - calendar-db
+      - rabbit:todo_broker
   rabbit:
     image: rabbitmq:3-management
     hostname: todo_broker
@@ -103,6 +104,7 @@ services:
       test: mysqladmin ping -h localhost -p$$MYSQL_ROOT_PASSWORD && test '0' -eq $$(ps aux | awk '{print $$11}' | grep -c -e '^mysql$$')
   calendar-db:
     container_name: calendar-db
+    hostname: calendar-db
     build: ./Calendar/api/db
     environment:
       - POSTGRES_PASSWORD=password

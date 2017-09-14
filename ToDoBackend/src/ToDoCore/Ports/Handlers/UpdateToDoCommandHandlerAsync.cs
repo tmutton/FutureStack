@@ -47,13 +47,8 @@ namespace ToDoCore.Ports.Handlers
 
                 title = toDoItem.Title;
             }
-
-            if (command.Complete.HasValue && command.Complete.Value)
-            {
-                var taskCompleteEvent = new TaskCompletedEvent(title);
-
-                _commandProcessor.Post(taskCompleteEvent);
-            }
+            
+            //POST a TaskCompletedEvent
 
             return await base.HandleAsync(command, cancellationToken);
         }

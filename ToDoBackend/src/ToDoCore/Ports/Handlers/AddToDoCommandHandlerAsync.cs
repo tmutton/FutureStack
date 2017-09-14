@@ -37,8 +37,10 @@ namespace ToDoCore.Ports.Handlers
                 );
                 command.ToDoItemId = savedItem.Id;
             }
-
-            _commandProcessor.Post(new TaskCreatedEvent(command.Title));
+            
+            
+            //POST a TaskCreatedEvent
+            
             return await base.HandleAsync(command, cancellationToken);
         }
     }

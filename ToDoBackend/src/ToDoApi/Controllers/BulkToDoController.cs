@@ -18,9 +18,9 @@ namespace ToDoApi.Controllers
         [HttpPost]
         public IActionResult Post([FromBody]BulkAddToDoRequest request)
         {
-            var bulkAddCommand = new BulkAddToDoCommand(request.ItemsToAdd);
+            // Create BulkAddToDoCommand
 
-            _commandProcessor.Post(bulkAddCommand);
+            //POST BulkAddToDoCommand using command processor
 
             //TODO: Should have a monitoring endpoint, and share a job table location for tracking progress
             return Accepted();

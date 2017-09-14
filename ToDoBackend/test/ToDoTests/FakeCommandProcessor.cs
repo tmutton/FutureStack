@@ -18,7 +18,15 @@ namespace ToDoTests
 
         void IAmACommandProcessor.Post<T>(T request)
         {
-            throw new System.NotImplementedException();
+            if(request.GetType() == typeof(TaskCompletedEvent))
+            {
+                SentCompletedEvent = true;
+            }
+            else if (request.GetType() == typeof(TaskCreatedEvent))
+            {
+                SentCreatedEvent = true;
+            }
+            
         }
 
         Task IAmACommandProcessor.PostAsync<T>(T request, bool continueOnCapturedContext, CancellationToken cancellationToken)

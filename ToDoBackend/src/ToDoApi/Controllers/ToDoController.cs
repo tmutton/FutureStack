@@ -49,17 +49,16 @@ namespace ToDoApi.Controllers
         public async Task<IActionResult> Post([FromBody]AddToDoRequest request)
         {
             // Create a AddToDoCommand
-            var addToDoCommand = new AddToDoCommand(request.Title, request.Completed, request.Order);
 
             // Use the command processor to Send command  
-            await _commandProcessor.SendAsync(addToDoCommand);
 
             // Get the ToDo by id via the query processor
-            var addedToDo = await _queryProcessor.ExecuteAsync(new ToDoByIdQuery(addToDoCommand.ToDoItemId));
-            addedToDo.Url = Url.RouteUrl("GetTodo", new { id = addedToDo.Id }, protocol: Request.Scheme);
             
             // Return the newly created ToDo
-            return CreatedAtRoute("GetTodo", new { id = addedToDo.Id }, addedToDo);
+            //return CreatedAtRoute("GetTodo", new { id = addedToDo.Id }, addedToDo);
+
+            //Remove this once done
+            return Ok();
         }
 
 
@@ -92,6 +91,7 @@ namespace ToDoApi.Controllers
 //        public async Task<IActionResult> Patch(int id, [FromBody]UpdateToDoRequest request)
 //        {
 //            // Create a UpdateToDoCommand
+        
 //            // Use the command processor to Send command
 //
 //            // Get the ToDo by id via the query processor

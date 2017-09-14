@@ -29,11 +29,9 @@ namespace ToDoCore.Ports.Handlers
             using (var uow = new ToDoContext(_options))
             {
                 var repository = new ToDoItemRepositoryAsync(uow);
-                var savedItem = await repository.AddAsync(
-                    new ToDoItem {Title = command.Title, Completed = command.Commpleted, Order = command.Order},
-                    cancellationToken
-                );
-                command.ToDoItemId = savedItem.Id;
+                // Add to repository
+                
+                // Add todo id to command
             }
 
             return await base.HandleAsync(command, cancellationToken);

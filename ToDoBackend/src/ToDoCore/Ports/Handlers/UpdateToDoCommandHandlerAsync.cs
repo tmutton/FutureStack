@@ -28,18 +28,11 @@ namespace ToDoCore.Ports.Handlers
             using (var uow = new ToDoContext(_options))
             {
                 var repository = new ToDoItemRepositoryAsync(uow);
-                var toDoItem = await repository.GetAsync(command.ToDoId, cancellationToken);
+                // Get ToDo from repo
+                
+                // Update ToDo
 
-                if (command.Title != null)
-                    toDoItem.Title = command.Title;
-
-                if (command.Complete.HasValue)
-                    toDoItem.Completed = command.Complete.Value;
-
-                if (command.Order.HasValue)
-                    toDoItem.Order = command.Order.Value;
-
-                await repository.UpdateAsync(toDoItem, cancellationToken);
+                // Update ToDo using repo
 
             }
 

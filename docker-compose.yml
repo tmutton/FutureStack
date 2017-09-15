@@ -54,7 +54,7 @@ services:
       - web
   calendar-web:
     container_name: calendar-web
-    build: ./Calendar/api
+    build: ./Calendar/Api
     ports:
       - "8000:8000" # expose ports HOST:CONTAINER
     environment:
@@ -68,7 +68,7 @@ services:
       - calendar-db
   calendar-worker:
     container_name: calendar-worker
-    build: ./Calendar/app
+    build: ./Calendar/App
     environment:
       - WORKER_CONFIG=development
       - BROKER=amqp://guest:guest@todo_broker:5672
@@ -105,7 +105,7 @@ services:
   calendar-db:
     container_name: calendar-db
     hostname: calendar-db
-    build: ./Calendar/api/db
+    build: ./Calendar/Api/db
     environment:
       - POSTGRES_PASSWORD=password
       - POSTGRES_USER=docker

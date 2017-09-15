@@ -28,6 +28,8 @@ Then you can run the project using docker-compose via
 docker-compose up -d --build
 ```
 
+Note: Try prepending the above command with sudo if running into errors 
+
 # Todo-Backend Tests
 Run the tests at: https://www.todobackend.com/specs/index.html
 First, change the test target root: 
